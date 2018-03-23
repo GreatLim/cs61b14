@@ -60,5 +60,4 @@ public class Move {
       return "[step from " + x2 + "" + y2 + " to " + x1 + "" + y1 + "]";
     }
   }
-
 }

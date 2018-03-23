@@ -8,21 +8,34 @@ package player;
  */
 public class MachinePlayer extends Player {
 
+  public final static boolean COMUPTER = true;
+  public final static boolean OPPONENT = false;
+
+  public static Board board;
+
+  public int color;
+  public static boolean side;
+
+
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
+    this.color = color;
   }
 
   // Creates a machine player with the given color and search depth.  Color is
   // either 0 (black) or 1 (white).  (White has the first move.)
   public MachinePlayer(int color, int searchDepth) {
+    this.color = color;
   }
 
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return new Move();
-  } 
+    Move move = new Move(2, 1);
+
+    return move;
+  }
 
   // If the Move m is legal, records the move as a move by the opponent
   // (updates the internal game board) and returns true.  If the move is
