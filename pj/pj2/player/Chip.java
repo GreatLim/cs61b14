@@ -18,6 +18,15 @@ public class Chip {
     public Chip(Move m){
 
     }
+    
+    public boolean equals(Chip c)
+    {
+    		if(c.color==color && c.x==x && c.y==y)
+    		{
+    			return true;
+    		}    	 
+    		return false;  	 
+    }
 
     public DList findPair(Board board) {
         return null;
