@@ -1,27 +1,68 @@
 /* Board.java*/
 
 package player;
+
 import list.*;
 
 /**
- *  Board class implements an 8 * 8 game board with Chip for each cell
+ * Board class implements an 8 * 8 game board with Chip for each cell
  **/
 
 public class Board {
+
     public final static int DIMENSION = 8;
-    public static Chip[][] grid = new Chip[DIMENSION][DIMENSION];
-    public int score;
+  
+    public Chip[][] grid = new Chip[DIMENSION][DIMENSION];
     public DList ChipList = new DList();//assume the game board will make change but not construct a new one every time it changes
 
+
+    public Board() {
+        for(int i = 0; i < DIMENSION; i ++) {
+            for(int j = 0; j < DIMENSION; j ++) {
+                grid[i][j] = new Chip(i, j, Color.SPACE);
+            }
+        }
+    }
+
+    /**
+     *  set a chip on the game board
+     *
+     *  @param c a chip that will be set
+     **/
+
+    public void setChip(Chip c) {
+        grid[c.x][c.y] = c;
+    }
+
+    /**
+     *  delete a chip on the game board
+     *
+     *  @param c a chip that will be deleted
+     **/
+
+    public void delChip(Chip c) {
+        grid[c.x][c.y].color = Color.SPACE;
+    }
+
+    /**
+     * evaluate the game board and give a score
+     *
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return score for the game board
+     */
+
+    public int evaluate(boolean side) {
+        return 0;
+    }
 
     //suppose Move= Add or Step only, not quit
     	    protected Board setBoard(Move m,int score,int side)
     	    {
-    	    		Chip c = new Chip(side,m.x1,m.y1);
+    	    		Chip c = new Chip(m.x1,m.y1,side);
     	    	    if(m.moveKind == Move.STEP) 
     			{
     				grid[m.x2][m.y2].color = -1;
-    				Chip c2 = new Chip(side,m.x2,m.y2);			
+    				Chip c2 = new Chip(m.x2,m.y2, side);			
     				try {
     					ListNode n = ChipList.front();
     					while(n.isValidNode())
@@ -38,14 +79,18 @@ public class Board {
     			}
     			grid[m.x1][m.y1].color = side;
     			ChipList.insertBack(c);
-    	    		this.score = score;
     	    		return this;
     	    }
     	    
     /**
-     *  set each board with a value for evaluation
+     * find the best move
+     *
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return Best with score
      **/
-    public void setScore(){
+
+    public Best chooseMove(boolean side) {
+        return null;
     }
     
     //side have the same definition of color; side = 0 for b; side = 1 for w
@@ -133,17 +178,66 @@ public class Board {
 
 
     /**
-     *  generateValidMove() generates a list of all valid moves of player "side" on "this" Game Board
+     *  isValidMove() determines whether move "m" of player "side" is a valid move on "this" Game
+     *  Board
      *
      *	Unusual conditions:
      *	If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT, returns false.
      *	If GameBoard squares contain illegal values, the behavior of this, method is undefined
      *	@param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     *	@return valid moves are returned in the "item" of the return DList
+     *	@return true if move "m" of player "side" is a valid move in "this" GameBoard; otherwise,
+     *	false
      **/
-    
-  //DList of Move
-    public DList generateValidMove(int side){
+
+    protected boolean isValidMove(int side, Move m) 
+    {
+    		// is the moveKind is not Valid the method is undefined
+    		//Quit is always valid;
+    		if(m.moveKind == Move.QUIT) 
+		{
+			return true;
+		}
+    		//rule3
+    		if((m.x1==0 && m.y1==0)||(m.x1==0 && m.y1==7)||(m.x1==7 && m.y1==0)||(m.x1==7 && m.y1==7))
+    		{
+    			return false;
+    		}
+    		
+    		//rule2
+    		if((side==1 && (m.y1==0 || m.y1==7))||(side==0 && (m.x1==0 || m.x1==7)))
+    		{
+    			return false;
+    		}
+    		
+    		//rule1
+    		if(grid[m.x1][m.y1].color!=-1)
+    		{
+    			return false;
+    		}
+    		
+    		//rule4
+    		if(isConnected(side,m)){
+    			return false;
+    		}else {
+    			return true;
+    		}
+    		
+    }
+
+
+    /**
+     * generateValidMove() generates a list of all valid moves of player "side" on "this" Game Board
+     * <p>
+     * Unusual conditions:
+     * If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT, returns false.
+     * If GameBoard squares contain illegal values, the behavior of this, method is undefined
+     *
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return valid moves are returned in the "item" of the return DList
+     **/
+
+
+   public DList generateValidMove(int side){
         
     		DList l = new DList();
     		//add if haveLeftChip()=true
@@ -196,34 +290,22 @@ public class Board {
     		
     		return l;
     }
-    private boolean haveLeftChip(int side)
-    {
-    		if(side == 0)
-    		{
-    			return Chip.bChipCount<10;
-    		}
-    		else
-    		{
-    			return Chip.wChipCount<10;
-    		}
-    }
-
 
     /**
-     *  hasValidNetwork() determines whether "this" GameBoard has a valid network
-     *  for player "side".  (Does not check whether the opponent has a network.)
-     *  A full description of what constitutes a valid network appears in the
-     *  project "readme" file.
+     * hasValidNetwork() determines whether "this" GameBoard has a valid network
+     * for player "side".  (Does not check whether the opponent has a network.)
+     * A full description of what constitutes a valid network appears in the
+     * project "readme" file.
+     * <p>
+     * Unusual conditions:
+     * If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
+     * returns false.
+     * If GameBoard squares contain illegal values, the behavior of this
+     * method is undefined (i.e., don't expect any reasonable behavior).
      *
-     *  Unusual conditions:
-     *    If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
-     *          returns false.
-     *    If GameBoard squares contain illegal values, the behavior of this
-     *          method is undefined (i.e., don't expect any reasonable behavior).
-     *
-     *  @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     *  @return true if player "side" has a winning network in "this" GameBoard;
-     *          false otherwise.
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return true if player "side" has a winning network in "this" GameBoard;
+     * false otherwise.
      **/
 
     public boolean hasValidNetwork(boolean side) {
