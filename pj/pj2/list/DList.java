@@ -127,6 +127,34 @@ public class DList extends List {
     return head.prev;
   }
 
+  /**determine whether there is intersection between DList "this" and "l"
+   * 
+   * @param l
+   * @return true if there is intersection between DList "this" and "l"; otherwise false
+   */
+   public boolean intersection(DList l) {
+ 	  ListNode n1 = front();
+ 	  try {
+ 		  while(n1.isValidNode())
+ 		  {
+ 			  ListNode n2 = l.front();
+ 			  while(n2.isValidNode())
+ 			  {
+ 				  if(n1.item.equals(n2))
+ 				  {
+ 					  return true;
+ 				  }
+ 				  n2 = n2.next();
+ 			  }
+ 			  n1 = n1.next();
+ 		  } 		  
+ 	  }catch(InvalidNodeException e)
+ 	  {
+ 		  System.out.println(e);
+ 	  } 
+ 	  return false;
+   }
+
   /**
    *  toString() returns a String representation of this DList.
    *
