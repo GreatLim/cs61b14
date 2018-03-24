@@ -14,10 +14,23 @@ public class Chip {
     public static int bChipCount = 0;//count the number of black chips used.
     public static int wChipCount = 0;//count the number of white chips used.
 
-
-    public Chip(Move m){
-
+    //discuss later
+    public Chip(int color,int x,int y)
+    {
+    		this.color = color;
+    		this.x = x;
+    		this.y = y;
+    		if(color == 0)
+    		{
+    			bChipCount++;
+    		}
+    		if(color == 1)
+    		{
+    			wChipCount++;
+    		}
+    		
     }
+
     
     public boolean equals(Chip c)
     {
