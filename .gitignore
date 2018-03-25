@@ -1,0 +1,7 @@
+# System file
+.DS_Store
+
+# IDE file
+/out/
+*.iml
+/.idea/
