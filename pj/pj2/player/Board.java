@@ -92,7 +92,6 @@ public class Board {
      * @return true if move "m" of player "side" makes three chips in a connected group in "this" GameBoard; otherwise,
      * false
      */
-    //forget to move back
     private boolean isConnected(int side, Move m)
     {
     	//moveKind is supposed to be STEP or ADD
