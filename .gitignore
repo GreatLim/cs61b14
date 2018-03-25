@@ -2,6 +2,8 @@
 .DS_Store
 
 # IDE file
-/out/
+out
 *.iml
-/.idea/
+.idea
+*.xml
+

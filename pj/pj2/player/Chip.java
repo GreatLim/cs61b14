@@ -17,13 +17,10 @@ public class Chip {
 
 
     
-    public boolean equals(Chip c)
-    {
-    		if(c.color==color && c.x==x && c.y==y)
-    		{
-    			return true;
-    		}    	 
-    		return false;  	 
+    public boolean equals(Chip c) {
+        return c.color == color && c.x == x && c.y == y;
+
+    }
 
     public Chip(int x, int y, int color){
         this.x = x;
@@ -154,7 +151,7 @@ public class Chip {
         s = "( " + x + " , " + y + " )";
         return s;
     }
-    public static void main(String[] arg) {
+    public static void main(String[] args) {
         Board b = new Board();
         b.grid[4][4].color = Color.WHITE;
         b.grid[5][5].color = Color.BLACK;
