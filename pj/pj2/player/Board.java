@@ -182,6 +182,44 @@ public class Board {
      * @return true if move "m" of player "side" makes three chips in a connected group in "this" GameBoard; otherwise,
      * false
      */
+<<<<<<< HEAD
+    private boolean isConnected(int side, Move m)
+    {
+    	//moveKind is supposed to be STEP or ADD
+    		if(m.moveKind == Move.STEP) 
+    		{
+    			grid[m.x2][m.y2].color = -1;
+    		}
+    		grid[m.x1][m.y1].color = side;   		
+    		DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair() 
+    		// the data type of the item in DListNode is Chip
+    		ListNode n =l1.front();
+    		while(n.isValidNode())
+    		{   			   			
+    			try{
+    				DList l2 = grid[((Chip)n.item()).x][((Chip)n.item()).y].findPair(this);
+    				if(l1.intersection(l2))
+    				{
+    					if(m.moveKind == Move.STEP) 
+		    		    {
+		    			grid[m.x2][m.y2].color = side;
+		    		    }	
+    		    			grid[m.x1][m.y1].color = -1;   
+    					return true;
+    				}
+    				n = n.next();
+    			}catch(InvalidNodeException e)
+    			{
+    				System.out.print(e);
+    			}
+    		}
+    		if(m.moveKind == Move.STEP) 
+		 {
+			grid[m.x2][m.y2].color = side;
+		 }	
+    		grid[m.x1][m.y1].color = -1;   
+    		return false;
+=======
     //forget to move back
     private boolean isConnected(int side, Move m) {
         //moveKind is supposed to be STEP or ADD
@@ -256,6 +294,7 @@ public class Board {
             return true;
         }
 
+>>>>>>> upstream/master
     }
 
 
