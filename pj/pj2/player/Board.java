@@ -52,14 +52,45 @@ public class Board {
      */
 
     public int evaluate(boolean side) {
-        return 0;
+        // pair number of this side
+        int PairNum1 = getPairNum(side);
+        // pair number of opponent side
+        int PairNum2 = getPairNum(!side);
+        if(this.hasValidNetwork(side)) {
+            return 46;
+        } else {
+            return PairNum1 - PairNum2;
+        }
     }
 
+    public int getPairNum(boolean side) {
+        int c = MachinePlayer.checkColor(side);
+        int sum = 0;
+        for(int i = 0; i < DIMENSION; i++) {
+            for(int j = 0; j < DIMENSION; j++){
+                if(grid[i][j].color == c) {
+                    sum += grid[i][j].findPair(this).length();
+                }
+            }
+        }
+        return sum/2;
+    }
+
+
+
+    /**
+     * set the Board for
+     *
+     * @param m Move
+     * @param side
+     * @return
+     */
+
     //suppose Move= Add or Step only, not quit
-    protected Board setBoard(Move m, int score, int side) {
+    protected Board setBoard(Move m, int side) {
         Chip c = new Chip(m.x1, m.y1, side);
         if (m.moveKind == Move.STEP) {
-            grid[m.x2][m.y2].color = -1;
+            grid[m.x2][m.y2].color = Color.SPACE;
             Chip c2 = new Chip(m.x2, m.y2, side);
             try {
                 ListNode n = ChipList.front();
@@ -80,17 +111,66 @@ public class Board {
         return this;
     }
 
-    /**
-     * find the best move
-     *
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @return Best with score
-     **/
+    // discuss ChipList ???
 
-    public Best chooseMove(boolean side) {
-        return null;
+    protected void restoreBoard(Move m, int color) {
+        // m1 is a move that reverses m
+        if(m.moveKind == Move.STEP) {
+            Move m1 = new Move(m.x2, m.y2, m.x1, m.y1);
+            setBoard(m1, color);
+        } else {
+            grid[m.x1][m.y1].color = Color.SPACE;
+        }
     }
 
+    /**
+     * find the best move
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @param alpha is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
+     * @param beta is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
+     * @param searchDepth is depth that this recursion can achieve
+     * @param mark is used to record searchDepth (it should be initialized with 0)
+     * @return Best objection that stores best move
+     */
+
+    public Best chooseMove(boolean side, int alpha, int beta, int searchDepth, int mark) {
+        Best myBest = new Best();
+        Best reply;
+        int color = MachinePlayer.checkColor(side);
+        DList l; //  stores each move
+
+        if(mark == searchDepth || hasValidNetwork(side)) {
+            alpha = beta = evaluate(side);
+        }
+
+        l = this.generateValidMove(color);
+        ListNode n = l.front();
+        while (n.isValidNode()) {
+            try {
+                Move m = (Move) n.item();
+                setBoard(m,color);
+                mark += 1;
+                reply = chooseMove(!side, alpha, beta, searchDepth, mark);
+                restoreBoard((Move) n.item(),color);
+                if(side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
+                    myBest.move = m;
+                    myBest.score = reply.score;
+                    alpha = reply.score;
+                } else if (side == MachinePlayer.OPPONENT && reply.score < myBest.score) {
+                    myBest.move = m;
+                    myBest.score = reply.score;
+                    beta = reply.score;
+                }
+                if (alpha >= beta) {
+                    return myBest;
+                }
+                n = n.next();
+            } catch (InvalidNodeException e) {
+                System.out.print(e);
+            }
+        }
+        return myBest;
+    }
 
 
     /**
@@ -237,15 +317,11 @@ public class Board {
         return l;
     }
 
-    private boolean haveLeftChip(int side)
-    {
-        if(side == 0)
-        {
-            return Chip.bChipCount<10;
-        }
-        else
-        {
-            return Chip.wChipCount<10;
+    private boolean haveLeftChip(int side) {
+        if (side == 0) {
+            return Chip.bChipCount < 10;
+        } else {
+            return Chip.wChipCount < 10;
         }
     }
 
