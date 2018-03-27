@@ -62,3 +62,113 @@ You will probably need to change some of your design decisions as you go; be
 sure to modify this file to reflect these changes before you submit your
 project.  Your design of classes and interfaces will be worth 10% of your
 grade.
+
+-----\
+CLASS|
+-----------------------------------------------------------------------------------
+/**
+ *  Board class implements an 8 * 8 game board with Chip for each cell
+ **/
+
+/**
+ *  Best Class holds a record of move and scores
+ **/
+
+/**
+ *  Chip Class records Chips' information
+ **/
+
+/**
+ *  Color class defines different values of colors.
+ **/
+
+
+------\
+MODULE|
+-----------------------------------------------------------------------------------
+/*module<1>*/
+/**
+ *  isValidMove() determines whether move "m" of player "side" is a valid move on "this" Game
+ *  Board
+ *
+ *	Unusual conditions:
+ *	If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT, returns false.
+ *	If GameBoard squares contain illegal values, the behavior of this, method is undefined
+ *	@param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+ *	@return true if move "m" of player "side" is a valid move in "this" GameBoard; otherwise,
+ *	false
+ **/
+
+public boolean isValidMove(boolean side, Move m)
+
+/*module<2>*/
+/**
+ *  generateValidMove() generates a list of all valid moves of player "side" on "this" Game Board
+ *
+ *	Unusual conditions:
+ *	If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT, returns false.
+ *	If GameBoard squares contain illegal values, the behavior of this, method is undefined
+ *	@param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+ *	@return valid moves are returned in the "item" of the return DList
+ **/
+
+public DList generateValidMove(boolean side) <in Board class>
+
+/**
+ *	class List declaration
+ *  use the class List in homework 6
+ **/
+
+/*module<3>*/
+/**
+  *  find the chips (of the same color) that form connections with a chip
+  *  @param b is an Game board
+  *  @return DList that stores chips that connect with a "this" chip.
+  **/
+
+public DList findPair(Board b)
+
+/*module<4>*/
+/**
+  *  hasValidNetwork() determines whether "this" GameBoard has a valid network
+  *  for player "side".  (Does not check whether the opponent has a network.)
+  *  A full description of what constitutes a valid network appears in the
+  *  project "readme" file.
+  *
+  *  Unusual conditions:
+  *    If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
+  *          returns false.
+  *    If GameBoard squares contain illegal values, the behavior of this
+  *          method is undefined (i.e., don't expect any reasonable behavior).
+  *
+  *  @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+  *  @return true if player "side" has a winning network in "this" GameBoard;
+  *          false otherwise.
+  **/
+
+public boolean hasValidNetwork(boolean side)
+
+/*module<5>*/
+/**
+  * evaluate the game board and give a score
+  *
+  * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+  * @return score for the game board
+  **/
+
+public int evaluate(boolean side)
+
+
+/*module<6>*/
+
+/**
+  *  find the best move
+  *  @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+  *  @param alpha is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
+  *  @param beta is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
+  *  @param searchDepth is depth that this recursion can achieve
+  *  @param mark is used to record searchDepth (it should be initialized with 0)
+  *  @return Best objection that stores best move
+  **/
+
+public Best chooseMove(boolean side, int alpha, int beta, int searchDepth, int mark) {

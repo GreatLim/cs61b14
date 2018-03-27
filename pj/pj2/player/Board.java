@@ -13,7 +13,7 @@ public class Board {
     public final static int DIMENSION = 8;
 
     public Chip[][] grid = new Chip[DIMENSION][DIMENSION];
-    public DList ChipList = new DList();//assume the game board will make change but not construct a new one every time it changes
+    
 
 
     public Board() {
@@ -82,32 +82,19 @@ public class Board {
      * set the Board for
      *
      * @param m Move
-     * @param side
+     * @param color
      * @return
      */
 
     //suppose Move= Add or Step only, not quit
-    protected Board setBoard(Move m, int side) {
-        Chip c = new Chip(m.x1, m.y1, side);
+    protected Board setBoard(Move m, int color) {
+        Chip c = new Chip(m.x1, m.y1, color);//the amount of chip is wrong ????
+        //if chip c is not used, we should change it to "new Chip(m.x1, m.y1, color);"
         if (m.moveKind == Move.STEP) {
             grid[m.x2][m.y2].color = Color.SPACE;
-            Chip c2 = new Chip(m.x2, m.y2, side);
-            try {
-                ListNode n = ChipList.front();
-                while (n.isValidNode()) {
-                    if (c2.equals((Chip) n.item())) {
-                        n.remove();
-                    }
-                    n = n.next();
-                }
-
-            } catch (InvalidNodeException e) {
-                System.out.println(e);
-            }
-
+            Chip c2 = new Chip(m.x2, m.y2, color);//why?
         }
-        grid[m.x1][m.y1].color = side;
-        ChipList.insertBack(c);
+        grid[m.x1][m.y1].color = color;
         return this;
     }
 
@@ -123,6 +110,7 @@ public class Board {
         }
     }
 
+    
     /**
      * find the best move
      * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
@@ -173,6 +161,24 @@ public class Board {
     }
 
 
+    private DList generateChipList(int color)
+    {
+    		DList ChipList = new DList();
+    		for(int i=0;i<8;i++)
+    		{
+    			for(int j=0;j<8;j++)
+    			{
+    				if(grid[i][j].color==color)
+    				{
+    					ChipList.insertBack(grid[i][j]);
+    				}
+    			}
+    		}
+    		return ChipList;
+
+    
+    }
+    
     /**
      * Be used in isValidMove() Test if a player have more than two chips in a connected group, whether
      * connected orthogonally or diagonally.
@@ -182,15 +188,15 @@ public class Board {
      * @return true if move "m" of player "side" makes three chips in a connected group in "this" GameBoard; otherwise,
      * false
      */
-<<<<<<< HEAD
-    private boolean isConnected(int side, Move m)
+
+    private boolean isConnected(int color, Move m)
     {
     	//moveKind is supposed to be STEP or ADD
     		if(m.moveKind == Move.STEP) 
     		{
-    			grid[m.x2][m.y2].color = -1;
+    			grid[m.x2][m.y2].color = Color.SPACE;
     		}
-    		grid[m.x1][m.y1].color = side;   		
+    		grid[m.x1][m.y1].color = color;   		
     		DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair() 
     		// the data type of the item in DListNode is Chip
     		ListNode n =l1.front();
@@ -202,9 +208,9 @@ public class Board {
     				{
     					if(m.moveKind == Move.STEP) 
 		    		    {
-		    			grid[m.x2][m.y2].color = side;
+		    			grid[m.x2][m.y2].color = color;
 		    		    }	
-    		    			grid[m.x1][m.y1].color = -1;   
+    		    			grid[m.x1][m.y1].color = Color.SPACE;   
     					return true;
     				}
     				n = n.next();
@@ -215,43 +221,13 @@ public class Board {
     		}
     		if(m.moveKind == Move.STEP) 
 		 {
-			grid[m.x2][m.y2].color = side;
+			grid[m.x2][m.y2].color = color;
 		 }	
-    		grid[m.x1][m.y1].color = -1;   
+    		grid[m.x1][m.y1].color = Color.SPACE;   
     		return false;
-=======
-    //forget to move back
-    private boolean isConnected(int side, Move m) {
-        //moveKind is supposed to be STEP or ADD
-        if (m.moveKind == Move.STEP) {
-            grid[m.x2][m.y2].color = -1;
-        }
-        grid[m.x1][m.y1].color = side;
-        DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair()
-        // the data type of the item in DListNode is Chip
-        ListNode n = l1.front();
-        while (n.isValidNode()) {
-            try {
-                DList l2 = grid[((Chip) n.item()).x][((Chip) n.item()).y].findPair(this);
-                if (l1.intersection(l2)) {
-                    if (m.moveKind == Move.STEP) {
-                        grid[m.x2][m.y2].color = side;
-                    }
-                    grid[m.x1][m.y1].color = -1;
-                    return true;
-                }
-                n = n.next();
-            } catch (InvalidNodeException e) {
-                System.out.print(e);
-            }
-        }
-        if (m.moveKind == Move.STEP) {
-            grid[m.x2][m.y2].color = side;
-        }
-        grid[m.x1][m.y1].color = -1;
-        return false;
-    }
-
+    
+     }
+    
 
     /**
      * isValidMove() determines whether move "m" of player "side" is a valid move on "this" Game
@@ -266,7 +242,7 @@ public class Board {
      * false
      **/
 
-    protected boolean isValidMove(int side, Move m) {
+    protected boolean isValidMove(int color, Move m) {
         // is the moveKind is not Valid the method is undefined
         //Quit is always valid;
         if (m.moveKind == Move.QUIT) {
@@ -278,23 +254,23 @@ public class Board {
         }
 
         //rule2
-        if ((side == 1 && (m.y1 == 0 || m.y1 == 7)) || (side == 0 && (m.x1 == 0 || m.x1 == 7))) {
+        if ((color == Color.WHITE && (m.y1 == 0 || m.y1 == 7)) || (color == Color.BLACK && (m.x1 == 0 || m.x1 == 7))) {
             return false;
         }
 
         //rule1
-        if (grid[m.x1][m.y1].color != -1) {
+        if (grid[m.x1][m.y1].color != Color.SPACE) {
             return false;
         }
 
         //rule4
-        if (isConnected(side, m)) {
+        if (isConnected(color, m)) {
             return false;
         } else {
             return true;
         }
 
->>>>>>> upstream/master
+
     }
 
 
@@ -310,26 +286,26 @@ public class Board {
      **/
 
 
-    public DList generateValidMove(int side) {
+    public DList generateValidMove(int color) {
 
         DList l = new DList();
         //add if haveLeftChip()=true
-        if (haveLeftChip(side)) {
+        if (haveLeftChip(color)) {
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
                     Move m = new Move(x, y);
-                    if (isValidMove(side, m)) {
+                    if (isValidMove(color, m)) {
                         l.insertFront(m);
                     }
                 }
             }
         }
         //step
-        //if chip.color==side, x=chip.x, y..;
-
-
+        //if chip.color==color, x=chip.x, y..;
+        
+        
         try {
-            ListNode n = ChipList.front();
+            ListNode n = generateChipList(color).front();
             while (n.isValidNode()) {
                 int x = ((Chip) n.item()).x,
                         y = ((Chip) n.item()).y;
@@ -338,7 +314,7 @@ public class Board {
                     int j = 1;
                     while (j >= -1) {
                         Move m = new Move(x + i, y + j);
-                        if (isValidMove(side, m)) {
+                        if (isValidMove(color, m)) {
                             l.insertFront(m);
                         }
                         j = j - 2;
@@ -356,8 +332,8 @@ public class Board {
         return l;
     }
 
-    private boolean haveLeftChip(int side) {
-        if (side == 0) {
+    private boolean haveLeftChip(int color) {
+        if (color == Color.BLACK) {
             return Chip.bChipCount < 10;
         } else {
             return Chip.wChipCount < 10;
@@ -382,6 +358,7 @@ public class Board {
      **/
 
     public boolean hasValidNetwork(boolean side) {
+    	
         return false;
     }
 }
