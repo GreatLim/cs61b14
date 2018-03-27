@@ -13,7 +13,7 @@ public class MachinePlayer extends Player {
 
     public static Board board;
 
-    public int color;
+    public static int color;
     public int searchDepth;
     public static boolean side;
 
@@ -56,4 +56,19 @@ public class MachinePlayer extends Player {
         return false;
     }
 
+    /**
+     * check color for each side
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return color of the side
+     */
+
+    public static int checkColor(boolean side) {
+        int c;
+        if(side == COMUPTER) {
+            c = color;
+        } else {
+            c = Math.abs(1 - color);
+        }
+        return c;
+    }
 }
