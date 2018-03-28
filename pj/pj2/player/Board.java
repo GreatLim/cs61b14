@@ -3,6 +3,7 @@
 package player;
 
 import list.*;
+import java.io.*;
 
 /**
  * Board class implements an 8 * 8 game board with Chip for each cell
@@ -418,31 +419,79 @@ public class Board {
     private void printBoard()
     {
     		int count=0;
+    		System.out.println("-----------------------------------------");
     		for(int i=0;i<8;i++){
     			for(int j=0;j<8;j++) {
-    				System.out.print("["+grid[i][j].color+"]");
+    				System.out.print("|"+Color.toString(grid[i][j].color));
     				count++;
     				if(count%8 == 0)
     				{
-    					System.out.println();
+    					System.out.println("| _"+i);
+    					System.out.println("-----------------------------------------");
     				}
     			}
     		}
+    		System.out.println("  0_   1_   2_   3_   4_   5_   6_   7_");
     }
     public void testIsValidMove()
     {
+    	 	BufferedReader keyBoard =
+    	          new BufferedReader(new InputStreamReader(System.in));
+
    		
-        //set a Move
-        System.out.println("start a new movement");
-        int color = Color.BLACK;
-        System.out.println("the color of the new movement is: "+color);
-        Move m1 = new Move(1,2);
-        System.out.println(m1.toString());
-        
-        //The move is or not valid
-        System.out.println("the movement is valid: "+isValidMove(color,m1));
+        //set a Move        
+        int color = Color.WHITE;
+        System.out.println("the color of the new movement is: "+Color.toString(color));
+        System.out.println("make a new movement");
+        System.out.println("Valid commands are: " +
+                "add, step, quit");
+        System.out.print("-->");
+        try {
+        		String moveKind = keyBoard.readLine();
+        		if(moveKind.equals("quit")){
+        			Move m = new Move();
+        			System.out.println("the movement is valid: "+isValidMove(color,m)); 	
+        		}
+            while(!moveKind.equals("quit")) {
+            		if(moveKind.equals("add")) {
+            			System.out.println("input position in which a chip is being added");
+            			System.out.print("input x-coordinates index-->");
+            			String x1 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index-->");
+            			String y1 = keyBoard.readLine();
+            			Move m = new Move(Integer.valueOf(x1).intValue(),Integer.valueOf(y1).intValue());
+            			System.out.println(m.toString());
+            			 //The move is or not valid
+            	        System.out.println("the movement is valid: "+isValidMove(color,m));
+            		}else if(moveKind.equals("step")) {
+            			System.out.println("input position in which a chip is being stepped");
+            			System.out.print("input x-coordinates index of new position-->");
+            			String x1 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index of new position-->");
+            			String y1 = keyBoard.readLine();
+            			System.out.print("input x-coordinates index of old position-->");
+            			String x2 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index of old position-->");
+            			String y2 = keyBoard.readLine();
+            			Move m = new Move(Integer.valueOf(x1).intValue(),Integer.valueOf(y1).intValue(),
+            					Integer.valueOf(x2).intValue(),Integer.valueOf(y2).intValue());
+            			System.out.println(m.toString());
+            			 //The move is or not valid
+            	        System.out.println("the movement is valid: "+isValidMove(color,m));          			
+            		}else {
+          			  System.err.println("Invalid move: "+moveKind );
+            		}
+            		 System.out.println("-->");
+            		 moveKind = keyBoard.readLine();
+            }
+        }catch(IOException e) {
+        		System.out.println(e);
+        }
     		
-    		
+    }
+    public void testGenerateValidMove()
+    {
+    	
     }
     public static void main(String[] args) {
     	//set a Board
