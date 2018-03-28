@@ -207,7 +207,7 @@ public class Board {
     			grid[m.x2][m.y2].color = Color.SPACE;
     		}
     		grid[m.x1][m.y1].color = color;   		
-    		DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair() 
+    		DList l1 = grid[m.x1][m.y1].findPair(this); 
     		// the data type of the item in DListNode is Chip
     		ListNode n =l1.front();
     		while(n.isValidNode())

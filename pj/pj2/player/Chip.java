@@ -17,8 +17,9 @@ public class Chip {
 
 
     
-    public boolean equals(Chip c) {
-        return c.color == color && c.x == x && c.y == y;
+    public boolean equals(Object c) {
+
+        return ((Chip)c).color == color && ((Chip)c).x == x && ((Chip)c).y == y;
 
     }
 
