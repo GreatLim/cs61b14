@@ -56,7 +56,7 @@ public class Board {
         int PairNum1 = getPairNum(side);
         // pair number of opponent side
         int PairNum2 = getPairNum(!side);
-        if(this.hasValidNetwork(side)) {
+        if (this.hasValidNetwork(side)) {
             return 46;
         } else {
             return PairNum1 - PairNum2;
@@ -66,22 +66,21 @@ public class Board {
     public int getPairNum(boolean side) {
         int c = MachinePlayer.checkColor(side);
         int sum = 0;
-        for(int i = 0; i < DIMENSION; i++) {
-            for(int j = 0; j < DIMENSION; j++){
-                if(grid[i][j].color == c) {
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                if (grid[i][j].color == c) {
                     sum += grid[i][j].findPair(this).length();
                 }
             }
         }
-        return sum/2;
+        return sum / 2;
     }
-
 
 
     /**
      * set the Board for
      *
-     * @param m Move
+     * @param m    Move
      * @param side
      * @return
      */
@@ -115,7 +114,7 @@ public class Board {
 
     protected void restoreBoard(Move m, int color) {
         // m1 is a move that reverses m
-        if(m.moveKind == Move.STEP) {
+        if (m.moveKind == Move.STEP) {
             Move m1 = new Move(m.x2, m.y2, m.x1, m.y1);
             setBoard(m1, color);
         } else {
@@ -125,11 +124,12 @@ public class Board {
 
     /**
      * find the best move
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @param alpha is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
-     * @param beta is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
+     *
+     * @param side        is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @param alpha       is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
+     * @param beta        is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
      * @param searchDepth is depth that this recursion can achieve
-     * @param mark is used to record searchDepth (it should be initialized with 0)
+     * @param mark        is used to record searchDepth (it should be initialized with 0)
      * @return Best objection that stores best move
      */
 
@@ -139,8 +139,15 @@ public class Board {
         int color = MachinePlayer.checkColor(side);
         DList l; //  stores each move
 
-        if(mark == searchDepth || hasValidNetwork(side)) {
-            alpha = beta = evaluate(side);
+        if (mark == searchDepth || hasValidNetwork(side)) {
+            myBest.score = evaluate(side);
+            myBest.move = null;
+        }
+
+        if(side == MachinePlayer.COMUPTER) {
+            myBest.score = alpha;
+        } else {
+            myBest.score = beta;
         }
 
         l = this.generateValidMove(color);
@@ -148,11 +155,11 @@ public class Board {
         while (n.isValidNode()) {
             try {
                 Move m = (Move) n.item();
-                setBoard(m,color);
+                setBoard(m, color);
                 mark += 1;
                 reply = chooseMove(!side, alpha, beta, searchDepth, mark);
-                restoreBoard((Move) n.item(),color);
-                if(side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
+                restoreBoard((Move) n.item(), color);
+                if (side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     alpha = reply.score;
@@ -182,45 +189,7 @@ public class Board {
      * @return true if move "m" of player "side" makes three chips in a connected group in "this" GameBoard; otherwise,
      * false
      */
-<<<<<<< HEAD
-    private boolean isConnected(int side, Move m)
-    {
-    	//moveKind is supposed to be STEP or ADD
-    		if(m.moveKind == Move.STEP) 
-    		{
-    			grid[m.x2][m.y2].color = -1;
-    		}
-    		grid[m.x1][m.y1].color = side;   		
-    		DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair() 
-    		// the data type of the item in DListNode is Chip
-    		ListNode n =l1.front();
-    		while(n.isValidNode())
-    		{   			   			
-    			try{
-    				DList l2 = grid[((Chip)n.item()).x][((Chip)n.item()).y].findPair(this);
-    				if(l1.intersection(l2))
-    				{
-    					if(m.moveKind == Move.STEP) 
-		    		    {
-		    			grid[m.x2][m.y2].color = side;
-		    		    }	
-    		    			grid[m.x1][m.y1].color = -1;   
-    					return true;
-    				}
-    				n = n.next();
-    			}catch(InvalidNodeException e)
-    			{
-    				System.out.print(e);
-    			}
-    		}
-    		if(m.moveKind == Move.STEP) 
-		 {
-			grid[m.x2][m.y2].color = side;
-		 }	
-    		grid[m.x1][m.y1].color = -1;   
-    		return false;
-=======
-    //forget to move back
+
     private boolean isConnected(int side, Move m) {
         //moveKind is supposed to be STEP or ADD
         if (m.moveKind == Move.STEP) {
@@ -294,7 +263,6 @@ public class Board {
             return true;
         }
 
->>>>>>> upstream/master
     }
 
 
