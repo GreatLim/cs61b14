@@ -175,7 +175,7 @@ public class Chip {
         b.grid[6][4].color = Color.WHITE;
         b.grid[2][4].color = Color.WHITE;
         b.grid[2][6].color = Color.WHITE;
-        DList l = b.grid[4][4].findPair(b);
+        DList l = b.grid[2][6].findPair(b);
         System.out.println(l.length());
     }
 

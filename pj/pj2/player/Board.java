@@ -431,7 +431,7 @@ public class Board {
     		System.out.println("-----------------------------------------");
     		for(int i=0;i<8;i++){
     			for(int j=0;j<8;j++) {
-    				System.out.print("|"+Color.toString(grid[i][j].color));
+    				System.out.print("|"+Color.toString(grid[j][i].color));
     				count++;
     				if(count%8 == 0)
     				{
@@ -509,14 +509,18 @@ public class Board {
 	    b.grid[4][4].color = Color.WHITE;
 	    b.grid[5][5].color = Color.BLACK;
 	    b.grid[4][2].color = Color.WHITE;
-	    b.grid[4][6].color = Color.WHITE;
-	    b.grid[2][2].color = Color.WHITE;
+	    b.grid[4][6].color = Color.BLACK;
 	    b.grid[6][6].color = Color.WHITE;
-	    b.grid[6][2].color = Color.WHITE;
+	    b.grid[2][2].color = Color.BLACK;
+	    /*
 	    b.grid[6][4].color = Color.WHITE;
+	    
+	    
+	    b.grid[6][2].color = Color.WHITE;
+	    
 	    b.grid[2][4].color = Color.WHITE;
 	    b.grid[2][6].color = Color.WHITE;
-	    
+	    */
 	    b.printBoard();
     		b.testIsValidMove();
     }
