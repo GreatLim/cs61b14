@@ -13,7 +13,7 @@ public class Chip {
     public int y;
     public static int bChipCount = 0;//count the number of black chips used.
     public static int wChipCount = 0;//count the number of white chips used.
-
+    public boolean mark = false;
 
 
     
@@ -150,6 +150,15 @@ public class Chip {
         String s;
         s = "( " + x + " , " + y + " )";
         return s;
+    }
+    
+    public boolean isVisited()
+    {
+    	 return mark;
+    }
+    public void marker()
+    {
+    		mark = true;
     }
     public static void main(String[] args) {
         Board b = new Board();

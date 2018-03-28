@@ -339,6 +339,18 @@ public class Board {
             return Chip.wChipCount < 10;
         }
     }
+    
+    private DList generateGChipList(int color) {
+    		DList l = new DList();
+    		return l;
+    }
+    private boolean isGChip(Chip c,int color) {
+    		return false;
+    }
+    private boolean isTurning(Chip x,Chip y)
+    {
+    		return false;
+    }
 
     /**
      * hasValidNetwork() determines whether "this" GameBoard has a valid network
@@ -357,8 +369,49 @@ public class Board {
      * false otherwise.
      **/
 
-    public boolean hasValidNetwork(boolean side) {
-    	
-        return false;
+    public boolean hasValidNetwork(int color) {
+    		ListNode n = generateGChipList(color).front();
+    		try {
+    			while(n.isValidNode()) {
+        			if(!findPath(n,color)){
+        				n = n.next();
+        			}else {
+        				return true;
+        			}        			
+        		}
+    			return false;
+    		}catch(InvalidNodeException e)
+    		{ 
+    			return false;
+    		}
+    }
+    private boolean findPath(ListNode u,int color)
+    {
+    		try {
+    			ListNode v = ((Chip)u.item()).findPair(this).front();
+    			int count = 0;
+        		while(v.isValidNode()) {
+        			if(((Chip)v.item()).isVisited() && isTurning((Chip)u.item(),(Chip)v.item())){
+        				count++;
+        				((Chip)v.item()).marker();
+        				if(!isGChip((Chip)v.item(),color)) {
+        					findPath(v,color);
+        				}else{
+        					if(count>=6) {
+        						return true;
+        					}else {
+        						v = v.next();
+        					}
+        				}
+        			}
+        			else {
+        				v = v.next();
+        			}      			
+        		}
+    			return false;
+    		}catch(InvalidNodeException e) {
+    			return false;
+    		}
+    		
     }
 }
