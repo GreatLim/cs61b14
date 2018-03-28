@@ -57,7 +57,7 @@ public class Board {
         int PairNum1 = getPairNum(side);
         // pair number of opponent side
         int PairNum2 = getPairNum(!side);
-        if(this.hasValidNetwork(side)) {
+        if (this.hasValidNetwork(side)) {
             return 46;
         } else {
             return PairNum1 - PairNum2;
@@ -67,24 +67,24 @@ public class Board {
     public int getPairNum(boolean side) {
         int c = MachinePlayer.checkColor(side);
         int sum = 0;
-        for(int i = 0; i < DIMENSION; i++) {
-            for(int j = 0; j < DIMENSION; j++){
-                if(grid[i][j].color == c) {
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+                if (grid[i][j].color == c) {
                     sum += grid[i][j].findPair(this).length();
                 }
             }
         }
-        return sum/2;
+        return sum / 2;
     }
-
 
 
     /**
      * set the Board for
      *
+
      * @param m Move
      * @param color
-     * @return
+
      */
 
     //suppose Move= Add or Step only, not quit
@@ -103,7 +103,7 @@ public class Board {
 
     protected void restoreBoard(Move m, int color) {
         // m1 is a move that reverses m
-        if(m.moveKind == Move.STEP) {
+        if (m.moveKind == Move.STEP) {
             Move m1 = new Move(m.x2, m.y2, m.x1, m.y1);
             setBoard(m1, color);
         } else {
@@ -114,11 +114,12 @@ public class Board {
     
     /**
      * find the best move
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @param alpha is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
-     * @param beta is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
+     *
+     * @param side        is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @param alpha       is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
+     * @param beta        is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
      * @param searchDepth is depth that this recursion can achieve
-     * @param mark is used to record searchDepth (it should be initialized with 0)
+     * @param mark        is used to record searchDepth (it should be initialized with 0)
      * @return Best objection that stores best move
      */
 
@@ -128,8 +129,15 @@ public class Board {
         int color = MachinePlayer.checkColor(side);
         DList l; //  stores each move
 
-        if(mark == searchDepth || hasValidNetwork(side)) {
-            alpha = beta = evaluate(side);
+        if (mark == searchDepth || hasValidNetwork(side)) {
+            myBest.score = evaluate(side);
+            myBest.move = null;
+        }
+
+        if(side == MachinePlayer.COMUPTER) {
+            myBest.score = alpha;
+        } else {
+            myBest.score = beta;
         }
 
         l = this.generateValidMove(color);
@@ -137,11 +145,11 @@ public class Board {
         while (n.isValidNode()) {
             try {
                 Move m = (Move) n.item();
-                setBoard(m,color);
+                setBoard(m, color);
                 mark += 1;
                 reply = chooseMove(!side, alpha, beta, searchDepth, mark);
-                restoreBoard((Move) n.item(),color);
-                if(side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
+                restoreBoard((Move) n.item(), color);
+                if (side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     alpha = reply.score;
@@ -190,6 +198,7 @@ public class Board {
      * false
      */
 
+
     private boolean isConnected(int color, Move m)
     {
     	//moveKind is supposed to be STEP or ADD
@@ -229,6 +238,7 @@ public class Board {
     
      }
     
+
 
     /**
      * isValidMove() determines whether move "m" of player "side" is a valid move on "this" Game
@@ -270,7 +280,6 @@ public class Board {
         } else {
             return true;
         }
-
 
     }
 
