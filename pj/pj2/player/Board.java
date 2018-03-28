@@ -29,7 +29,7 @@ public class Board {
      *
      * @param c a chip that will be set
      **/
-
+    //discuss about validity of Chip 
     public void setChip(Chip c) {
         grid[c.x][c.y] = c;
     }
@@ -305,7 +305,7 @@ public class Board {
         
         
         try {
-            ListNode n = generateChipList(color).front();
+            ListNode n = generateGChipList(color).front();
             while (n.isValidNode()) {
                 int x = ((Chip) n.item()).x,
                         y = ((Chip) n.item()).y;
@@ -369,7 +369,8 @@ public class Board {
      * false otherwise.
      **/
 
-    public boolean hasValidNetwork(int color) {
+    public boolean hasValidNetwork(boolean side) {
+    		int color = MachinePlayer.checkColor(side);
     		ListNode n = generateGChipList(color).front();
     		try {
     			while(n.isValidNode()) {
@@ -413,5 +414,52 @@ public class Board {
     			return false;
     		}
     		
+    }
+    private void printBoard()
+    {
+    		int count=0;
+    		for(int i=0;i<8;i++){
+    			for(int j=0;j<8;j++) {
+    				System.out.print("["+grid[i][j].color+"]");
+    				count++;
+    				if(count%8 == 0)
+    				{
+    					System.out.println();
+    				}
+    			}
+    		}
+    }
+    public void testIsValidMove()
+    {
+   		
+        //set a Move
+        System.out.println("start a new movement");
+        int color = Color.BLACK;
+        System.out.println("the color of the new movement is: "+color);
+        Move m1 = new Move(1,2);
+        System.out.println(m1.toString());
+        
+        //The move is or not valid
+        System.out.println("the movement is valid: "+isValidMove(color,m1));
+    		
+    		
+    }
+    public static void main(String[] args) {
+    	//set a Board
+		System.out.println("start to set a Board");
+		Board b = new Board();
+	    b.grid[4][4].color = Color.WHITE;
+	    b.grid[5][5].color = Color.BLACK;
+	    b.grid[4][2].color = Color.WHITE;
+	    b.grid[4][6].color = Color.WHITE;
+	    b.grid[2][2].color = Color.WHITE;
+	    b.grid[6][6].color = Color.WHITE;
+	    b.grid[6][2].color = Color.WHITE;
+	    b.grid[6][4].color = Color.WHITE;
+	    b.grid[2][4].color = Color.WHITE;
+	    b.grid[2][6].color = Color.WHITE;
+	    
+	    b.printBoard();
+    		b.testIsValidMove();
     }
 }

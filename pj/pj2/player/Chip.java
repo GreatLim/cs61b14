@@ -160,6 +160,8 @@ public class Chip {
     {
     		mark = true;
     }
+    
+    
     public static void main(String[] args) {
         Board b = new Board();
         b.grid[4][4].color = Color.WHITE;
