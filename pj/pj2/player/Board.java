@@ -627,11 +627,11 @@ public class Board {
 		Board b = new Board();
 		
 		b.grid[4][4].color = Color.WHITE;
-	    //b.grid[3][1].color = Color.BLACK;
+	    b.grid[1][1].color = Color.BLACK;
 	    b.grid[4][2].color = Color.WHITE;
 	    b.grid[4][6].color = Color.BLACK;
 	    b.grid[6][6].color = Color.WHITE;
-	    b.grid[2][2].color = Color.BLACK;
+	    b.grid[2][3].color = Color.BLACK;
 	    
 	    b.grid[6][4].color = Color.WHITE;
 	    b.grid[4][7].color = Color.BLACK;
@@ -644,10 +644,9 @@ public class Board {
 	    
 	    b.printBoard();
 	    System.out.println("test isValidMove()");
-    		//b.testIsValidMove();
+    		b.testIsValidMove();
     		System.out.println("test generateValidMove()");
     		b.testGenerateValidMove();
-    		b.printBoard();
     		System.out.println("test hasValidNetwork()");
     		b.testHasValidNetwork();
     }
