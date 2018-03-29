@@ -13,7 +13,7 @@ public class Chip {
     public int y;
     public static int bChipCount = 0;//count the number of black chips used.
     public static int wChipCount = 0;//count the number of white chips used.
-    public boolean mark = false;
+    
 
 
     
@@ -146,21 +146,27 @@ public class Chip {
         }
         return result;
     }
-
+    
+    protected boolean isVisited(boolean[][] key)
+    {
+    	 	return key[x][y];    	 	
+    }
+    protected void marker(boolean[][] key)
+    {
+    		key[x][y] = true;
+    		
+    }
+    protected void unmarker(boolean[][] key)
+    {
+    		key[x][y] = false;
+    }
     public String toString(){
         String s;
         s = "( " + x + " , " + y + " )";
         return s;
     }
     
-    public boolean isVisited()
-    {
-    	 return mark;
-    }
-    public void marker()
-    {
-    		mark = true;
-    }
+   
     
     
     public static void main(String[] args) {

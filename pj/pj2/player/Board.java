@@ -170,7 +170,7 @@ public class Board {
     }
 
 
-    private DList generateChipList(int color)
+    private DList generateGChipList(int color)
     {
     		DList ChipList = new DList();
     		for(int i=0;i<8;i++)
@@ -207,36 +207,51 @@ public class Board {
     			grid[m.x2][m.y2].color = Color.SPACE;
     		}
     		grid[m.x1][m.y1].color = color;   		
-    		DList l1 = grid[m.x1][m.y1].findPair(this); 
-    		// the data type of the item in DListNode is Chip
-    		ListNode n =l1.front();
-    		while(n.isValidNode())
-    		{   			   			
-    			try{
-    				DList l2 = grid[((Chip)n.item()).x][((Chip)n.item()).y].findPair(this);
-    				if(l1.intersection(l2))
+    		ListNode n = generateGChipList(color).front();
+    		try {
+    			while(n.isValidNode()) {
+    				if(isConnected(color,(Chip)n.item()))
     				{
     					if(m.moveKind == Move.STEP) 
-		    		    {
-		    			grid[m.x2][m.y2].color = color;
-		    		    }	
-    		    			grid[m.x1][m.y1].color = Color.SPACE;   
+    	    			 {
+    	    				grid[m.x2][m.y2].color = color;
+    	    			 }	
+    	    	    		grid[m.x1][m.y1].color = Color.SPACE; 
     					return true;
     				}
     				n = n.next();
-    			}catch(InvalidNodeException e)
-    			{
-    				System.out.print(e);
+    			}
+    			if(m.moveKind == Move.STEP) 
+    			 {
+    				grid[m.x2][m.y2].color = color;
+    			 }	
+    	    		grid[m.x1][m.y1].color = Color.SPACE; 
+    			return false;
+    		}catch(InvalidNodeException e) {
+    			return false;
+    		}   
+     }
+    private boolean isConnected(int color, Chip c) {
+    		if(color == Color.SPACE)
+    		{
+    			return false;
+    		}
+    		int flag = 0;
+    		for(int i=-1;i<=1;i++) {
+    			for(int j=-1;j<=1;j++) {
+    				if(c.x+i<8 && c.x+i>=0 && c.y+i<8 && c.y+i>=0) {
+    					if(grid[c.x+i][c.y+j].color == color) {
+        					flag++;
+        				}
+    				}				
     			}
     		}
-    		if(m.moveKind == Move.STEP) 
-		 {
-			grid[m.x2][m.y2].color = color;
-		 }	
-    		grid[m.x1][m.y1].color = Color.SPACE;   
-    		return false;
-    
-     }
+    		if(flag >= 3) {
+    			return true;
+    		}else {
+    			return false;
+    		}
+    }
     
 
 
@@ -324,9 +339,11 @@ public class Board {
                     int j = 1;
                     while (j >= -1) {
                         Move m = new Move(x + i, y + j);
-                        if (isValidMove(color, m)) {
-                            l.insertFront(m);
-                        }
+                        if(x+i>=0 && x+i<8 && y+j>=0 && y+j<8) {
+	                        	if (isValidMove(color, m)) {
+	                                l.insertFront(m);
+	                            }
+                        }                       
                         j = j - 2;
                     }
                     i = i - 2;
@@ -350,16 +367,88 @@ public class Board {
         }
     }
     
-    private DList generateGChipList(int color) {
-    		DList l = new DList();
+    private DList start(int color) {
+     	if(color == Color.SPACE) {
+     		return null;
+     	}    		
+    		
+     	DList l = new DList();
+    		if(color == Color.BLACK) {
+    			for(int i=0;i<8;i++) {
+    				if(grid[i][0].color == color) {
+    					l.insertBack(grid[i][0]);
+    				}
+    			}  		
+    		}else {
+    			for(int i=0;i<8;i++) {
+    				if(grid[0][i].color == color) {
+    					l.insertBack(grid[0][i]);
+    				}
+    			}  		
+    		}
     		return l;
     }
-    private boolean isGChip(Chip c,int color) {
-    		return false;
+    private boolean isEndpoint(Chip c,int color) {
+    		if(color == Color.SPACE) {
+     		return false;
+     	}
+    		
+    		if(color == Color.BLACK) {
+    			if(c.y == 7) {
+    				return true;
+    			}   			
+    		}else {
+    			if(c.x == 7) {
+    				return true;
+    			}   			
+    		}
+    		return false;  		
     }
-    private boolean isTurning(Chip x,Chip y)
+    private boolean isStartpoint(Chip c,int color) {
+		if(color == Color.SPACE) {
+ 		return false;
+ 	}
+		
+		if(color == Color.BLACK) {
+			if(c.y == 0) {
+				return true;
+			}   			
+		}else {
+			if(c.x == 0) {
+				return true;
+			}   			
+		}
+		return false;  		
+}
+    //c1->c2->c3
+    private boolean isTurning(Chip c1,Chip c2,Chip c3)
     {
-    		return false;
+    		if(direction(c1,c2)==direction(c2,c3)){
+    			return false;
+    		}else {
+    			return true;
+    		}
+    		
+    }
+    //c1,c2 is a pair;
+    //c1->c2
+    //return -1 for vertical; 1 for horizontal; 
+    // 2 for diagonal left_down && right_upper; 
+    //-2 for diagonal left_upper && right_down; 
+    // 0 for not connect
+    private int direction(Chip c1, Chip c2) {
+    		if(c1.x == c2.x) {
+    			return -1;
+    		}else if(c1.y == c2.y) {
+    			return 1;
+    		}else if((c1.x-c1.y) == (c2.x-c2.y)) {
+    			return -2;
+    		}else if((c1.x+c1.y) == (c2.x+c2.y)) {
+    			return 2;
+    		}else {
+    			return 0;
+    		}
+    		
     }
 
     /**
@@ -381,14 +470,29 @@ public class Board {
 
     public boolean hasValidNetwork(boolean side) {
     		int color = MachinePlayer.checkColor(side);
-    		ListNode n = generateGChipList(color).front();
+    		if(start(color) == null) {
+    			return false;
+    		}
+    		ListNode u = start(color).front();
     		try {
-    			while(n.isValidNode()) {
-        			if(!findPath(n,color)){
-        				n = n.next();
-        			}else {
-        				return true;
-        			}        			
+    			while(u.isValidNode()) {
+    				ListNode v = ((Chip)u.item()).findPair(this).front();
+    				while(v.isValidNode()) {
+    					boolean[][] key = new boolean[8][8];
+    					for(int i=0;i<8;i++) {
+    						for(int j=0;j<8;j++) {
+    							key[i][j] = false;
+    						}
+    					}
+    					((Chip)u.item()).marker(key);
+    					((Chip)v.item()).marker(key); 
+    					if(!findPath(u,v,color,key,2)){
+            				v = v.next();
+            			}else {
+            				return true;
+            			}  
+    				} 
+    				u = u.next();
         		}
     			return false;
     		}catch(InvalidNodeException e)
@@ -396,36 +500,41 @@ public class Board {
     			return false;
     		}
     }
-    private boolean findPath(ListNode u,int color)
+    private boolean findPath(ListNode u,ListNode v,int color,boolean[][] key,int step)
     {
-    		try {
-    			ListNode v = ((Chip)u.item()).findPair(this).front();
-    			int count = 0;
-        		while(v.isValidNode()) {
-        			if(((Chip)v.item()).isVisited() && isTurning((Chip)u.item(),(Chip)v.item())){
-        				count++;
-        				((Chip)v.item()).marker();
-        				if(!isGChip((Chip)v.item(),color)) {
-        					findPath(v,color);
-        				}else{
-        					if(count>=6) {
-        						return true;
-        					}else {
-        						v = v.next();
-        					}
-        				}
+    		try {   			
+    			ListNode w = ((Chip)v.item()).findPair(this).front();    			
+        		while(w.isValidNode()) {        			 
+        			if(isTurning((Chip)u.item(),(Chip)v.item(),(Chip)w.item()))
+        			{
+        				//w is not visited
+        				if(!((Chip)w.item()).isVisited(key)) {
+        					((Chip)w.item()).marker(key); 
+            				//w is not an end point
+            				if(!isEndpoint((Chip)w.item(),color)) { 
+            					if(findPath(v,w,color,key,step+1)) {
+            						return true;
+            					}
+            				}
+            				//w is an end point
+            				else {            					          					
+            					if(step>=5){          						
+            						return true;
+            					}
+            				}     				
+            			}else {
+            				((Chip)w.item()).unmarker(key);
+                			step--;
+            			}        				        		
         			}
-        			else {
-        				v = v.next();
-        			}      			
-        		}
-    			return false;
+        			w = w.next();
+        		}        		
     		}catch(InvalidNodeException e) {
     			return false;
     		}
-    		
+    		return false;
     }
-    private void printBoard()
+    public void printBoard()
     {
     		int count=0;
     		System.out.println("-----------------------------------------");
@@ -499,29 +608,47 @@ public class Board {
     		
     }
     public void testGenerateValidMove()
+    {	
+    		int color = Color.WHITE;
+        System.out.println("the color of the new movement is: "+Color.toString(color));
+        System.out.println(generateValidMove(color).toString());
+    }
+    public void testHasValidNetwork()
     {
-    	
+    		MachinePlayer.color = Color.WHITE;
+    		System.out.println("MachinePlayer is WHITE");
+    		System.out.println("there is a valid network for MachinePlayer: "+hasValidNetwork(MachinePlayer.COMUPTER));
+    		System.out.println("there is a valid network for OpponentPlayer: "+hasValidNetwork(MachinePlayer.OPPONENT));
     }
     public static void main(String[] args) {
     	//set a Board
 		System.out.println("start to set a Board");
+		
 		Board b = new Board();
-	    b.grid[4][4].color = Color.WHITE;
-	    b.grid[5][5].color = Color.BLACK;
+		
+		b.grid[4][4].color = Color.WHITE;
+	    //b.grid[3][1].color = Color.BLACK;
 	    b.grid[4][2].color = Color.WHITE;
 	    b.grid[4][6].color = Color.BLACK;
 	    b.grid[6][6].color = Color.WHITE;
 	    b.grid[2][2].color = Color.BLACK;
-	    /*
-	    b.grid[6][4].color = Color.WHITE;
 	    
+	    b.grid[6][4].color = Color.WHITE;
+	    b.grid[4][7].color = Color.BLACK;
 	    
 	    b.grid[6][2].color = Color.WHITE;
 	    
-	    b.grid[2][4].color = Color.WHITE;
-	    b.grid[2][6].color = Color.WHITE;
-	    */
+	    b.grid[2][4].color = Color.BLACK;
+	    b.grid[7][2].color = Color.WHITE;
+	    b.grid[2][0].color = Color.BLACK;
+	    
 	    b.printBoard();
-    		b.testIsValidMove();
+	    System.out.println("test isValidMove()");
+    		//b.testIsValidMove();
+    		System.out.println("test generateValidMove()");
+    		b.testGenerateValidMove();
+    		b.printBoard();
+    		System.out.println("test hasValidNetwork()");
+    		b.testHasValidNetwork();
     }
 }
