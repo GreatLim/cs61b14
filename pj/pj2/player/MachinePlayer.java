@@ -70,7 +70,7 @@ public class MachinePlayer extends Player {
         DList l; //  stores each move
         //board.printBoard();
         l = board.generateValidMove(color);
-        System.out.println(l.toString());
+        //System.out.println(l.toString());
 
         if (mark == searchDepth || board.hasValidNetwork(side) || l == null) {
             myBest.score = board.evaluate(side);
