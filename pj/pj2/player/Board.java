@@ -134,7 +134,7 @@ public class Board {
             myBest.move = null;
         }
 
-        if(side == MachinePlayer.COMUPTER) {
+        if(side == MachinePlayer.COMPUTER) {
             myBest.score = alpha;
         } else {
             myBest.score = beta;
@@ -149,7 +149,7 @@ public class Board {
                 mark += 1;
                 reply = chooseMove(!side, alpha, beta, searchDepth, mark);
                 restoreBoard((Move) n.item(), color);
-                if (side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
+                if (side == MachinePlayer.COMPUTER && reply.score > myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     alpha = reply.score;
@@ -239,7 +239,7 @@ public class Board {
     		int flag = 0;
     		for(int i=-1;i<=1;i++) {
     			for(int j=-1;j<=1;j++) {
-    				if(c.x+i<8 && c.x+i>=0 && c.y+i<8 && c.y+i>=0) {
+    				if(c.x+i<8 && c.x+i>=0 && c.y+j<8 && c.y+j>=0) {
     					if(grid[c.x+i][c.y+j].color == color) {
         					flag++;
         				}
@@ -617,7 +617,7 @@ public class Board {
     {
     		MachinePlayer.color = Color.WHITE;
     		System.out.println("MachinePlayer is WHITE");
-    		System.out.println("there is a valid network for MachinePlayer: "+hasValidNetwork(MachinePlayer.COMUPTER));
+    		System.out.println("there is a valid network for MachinePlayer: "+hasValidNetwork(MachinePlayer.COMPUTER));
     		System.out.println("there is a valid network for OpponentPlayer: "+hasValidNetwork(MachinePlayer.OPPONENT));
     }
     public static void main(String[] args) {
