@@ -2,6 +2,8 @@
 
 package list;
 
+import player.*;
+
 /**
  *  A DList is a mutable doubly-linked list ADT.  Its implementation is
  *  circularly-linked and employs a sentinel node at the head of the list.
@@ -140,7 +142,7 @@ public class DList extends List {
  			  ListNode n2 = l.front();
  			  while(n2.isValidNode())
  			  {
- 				  if(n1.item.equals(n2))
+ 				  if(n1.item().equals(n2.item()))
  				  {
  					  return true;
  				  }

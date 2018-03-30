@@ -3,6 +3,7 @@
 package player;
 
 import list.*;
+import java.io.*;
 
 /**
  * Board class implements an 8 * 8 game board with Chip for each cell
@@ -13,7 +14,7 @@ public class Board {
     public final static int DIMENSION = 8;
 
     public Chip[][] grid = new Chip[DIMENSION][DIMENSION];
-    public DList ChipList = new DList();//assume the game board will make change but not construct a new one every time it changes
+    
 
 
     public Board() {
@@ -29,7 +30,7 @@ public class Board {
      *
      * @param c a chip that will be set
      **/
-
+    //discuss about validity of Chip 
     public void setChip(Chip c) {
         grid[c.x][c.y] = c;
     }
@@ -80,33 +81,21 @@ public class Board {
     /**
      * set the Board for
      *
-     * @param m    Move
-     * @param side
-     * @return
+
+     * @param m Move
+     * @param color
+
      */
 
     //suppose Move= Add or Step only, not quit
-    protected Board setBoard(Move m, int side) {
-        Chip c = new Chip(m.x1, m.y1, side);
+    protected Board setBoard(Move m, int color) {
+        Chip c = new Chip(m.x1, m.y1, color);//the amount of chip is wrong ????
+        //if chip c is not used, we should change it to "new Chip(m.x1, m.y1, color);"
         if (m.moveKind == Move.STEP) {
             grid[m.x2][m.y2].color = Color.SPACE;
-            Chip c2 = new Chip(m.x2, m.y2, side);
-            try {
-                ListNode n = ChipList.front();
-                while (n.isValidNode()) {
-                    if (c2.equals((Chip) n.item())) {
-                        n.remove();
-                    }
-                    n = n.next();
-                }
-
-            } catch (InvalidNodeException e) {
-                System.out.println(e);
-            }
-
+            Chip c2 = new Chip(m.x2, m.y2, color);//why?
         }
-        grid[m.x1][m.y1].color = side;
-        ChipList.insertBack(c);
+        grid[m.x1][m.y1].color = color;
         return this;
     }
 
@@ -122,6 +111,7 @@ public class Board {
         }
     }
 
+    
     /**
      * find the best move
      *
@@ -144,7 +134,7 @@ public class Board {
             myBest.move = null;
         }
 
-        if(side == MachinePlayer.COMUPTER) {
+        if(side == MachinePlayer.COMPUTER) {
             myBest.score = alpha;
         } else {
             myBest.score = beta;
@@ -159,7 +149,7 @@ public class Board {
                 mark += 1;
                 reply = chooseMove(!side, alpha, beta, searchDepth, mark);
                 restoreBoard((Move) n.item(), color);
-                if (side == MachinePlayer.COMUPTER && reply.score > myBest.score) {
+                if (side == MachinePlayer.COMPUTER && reply.score > myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     alpha = reply.score;
@@ -180,6 +170,24 @@ public class Board {
     }
 
 
+    private DList generateGChipList(int color)
+    {
+    		DList ChipList = new DList();
+    		for(int i=0;i<8;i++)
+    		{
+    			for(int j=0;j<8;j++)
+    			{
+    				if(grid[i][j].color==color)
+    				{
+    					ChipList.insertBack(grid[i][j]);
+    				}
+    			}
+    		}
+    		return ChipList;
+
+    
+    }
+    
     /**
      * Be used in isValidMove() Test if a player have more than two chips in a connected group, whether
      * connected orthogonally or diagonally.
@@ -190,36 +198,61 @@ public class Board {
      * false
      */
 
-    private boolean isConnected(int side, Move m) {
-        //moveKind is supposed to be STEP or ADD
-        if (m.moveKind == Move.STEP) {
-            grid[m.x2][m.y2].color = -1;
-        }
-        grid[m.x1][m.y1].color = side;
-        DList l1 = grid[m.x1][m.y1].findPair(this);//the chip itself should not be return by findPair()
-        // the data type of the item in DListNode is Chip
-        ListNode n = l1.front();
-        while (n.isValidNode()) {
-            try {
-                DList l2 = grid[((Chip) n.item()).x][((Chip) n.item()).y].findPair(this);
-                if (l1.intersection(l2)) {
-                    if (m.moveKind == Move.STEP) {
-                        grid[m.x2][m.y2].color = side;
-                    }
-                    grid[m.x1][m.y1].color = -1;
-                    return true;
-                }
-                n = n.next();
-            } catch (InvalidNodeException e) {
-                System.out.print(e);
-            }
-        }
-        if (m.moveKind == Move.STEP) {
-            grid[m.x2][m.y2].color = side;
-        }
-        grid[m.x1][m.y1].color = -1;
-        return false;
+
+    private boolean isConnected(int color, Move m)
+    {
+    	//moveKind is supposed to be STEP or ADD
+    		if(m.moveKind == Move.STEP) 
+    		{
+    			grid[m.x2][m.y2].color = Color.SPACE;
+    		}
+    		grid[m.x1][m.y1].color = color;   		
+    		ListNode n = generateGChipList(color).front();
+    		try {
+    			while(n.isValidNode()) {
+    				if(isConnected(color,(Chip)n.item()))
+    				{
+    					if(m.moveKind == Move.STEP) 
+    	    			 {
+    	    				grid[m.x2][m.y2].color = color;
+    	    			 }	
+    	    	    		grid[m.x1][m.y1].color = Color.SPACE; 
+    					return true;
+    				}
+    				n = n.next();
+    			}
+    			if(m.moveKind == Move.STEP) 
+    			 {
+    				grid[m.x2][m.y2].color = color;
+    			 }	
+    	    		grid[m.x1][m.y1].color = Color.SPACE; 
+    			return false;
+    		}catch(InvalidNodeException e) {
+    			return false;
+    		}   
+     }
+    private boolean isConnected(int color, Chip c) {
+    		if(color == Color.SPACE)
+    		{
+    			return false;
+    		}
+    		int flag = 0;
+    		for(int i=-1;i<=1;i++) {
+    			for(int j=-1;j<=1;j++) {
+    				if(c.x+i<8 && c.x+i>=0 && c.y+j<8 && c.y+j>=0) {
+    					if(grid[c.x+i][c.y+j].color == color) {
+        					flag++;
+        				}
+    				}				
+    			}
+    		}
+    		if(flag >= 3) {
+    			return true;
+    		}else {
+    			return false;
+    		}
     }
+    
 
 
     /**
@@ -235,7 +268,7 @@ public class Board {
      * false
      **/
 
-    protected boolean isValidMove(int side, Move m) {
+    protected boolean isValidMove(int color, Move m) {
         // is the moveKind is not Valid the method is undefined
         //Quit is always valid;
         if (m.moveKind == Move.QUIT) {
@@ -247,17 +280,17 @@ public class Board {
         }
 
         //rule2
-        if ((side == 1 && (m.y1 == 0 || m.y1 == 7)) || (side == 0 && (m.x1 == 0 || m.x1 == 7))) {
+        if ((color == Color.WHITE && (m.y1 == 0 || m.y1 == 7)) || (color == Color.BLACK && (m.x1 == 0 || m.x1 == 7))) {
             return false;
         }
 
         //rule1
-        if (grid[m.x1][m.y1].color != -1) {
+        if (grid[m.x1][m.y1].color != Color.SPACE) {
             return false;
         }
 
         //rule4
-        if (isConnected(side, m)) {
+        if (isConnected(color, m)) {
             return false;
         } else {
             return true;
@@ -278,26 +311,26 @@ public class Board {
      **/
 
 
-    public DList generateValidMove(int side) {
+    public DList generateValidMove(int color) {
 
         DList l = new DList();
         //add if haveLeftChip()=true
-        if (haveLeftChip(side)) {
+        if (haveLeftChip(color)) {
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
                     Move m = new Move(x, y);
-                    if (isValidMove(side, m)) {
+                    if (isValidMove(color, m)) {
                         l.insertFront(m);
                     }
                 }
             }
         }
         //step
-        //if chip.color==side, x=chip.x, y..;
-
-
+        //if chip.color==color, x=chip.x, y..;
+        
+        
         try {
-            ListNode n = ChipList.front();
+            ListNode n = generateGChipList(color).front();
             while (n.isValidNode()) {
                 int x = ((Chip) n.item()).x,
                         y = ((Chip) n.item()).y;
@@ -306,9 +339,11 @@ public class Board {
                     int j = 1;
                     while (j >= -1) {
                         Move m = new Move(x + i, y + j);
-                        if (isValidMove(side, m)) {
-                            l.insertFront(m);
-                        }
+                        if(x+i>=0 && x+i<8 && y+j>=0 && y+j<8) {
+	                        	if (isValidMove(color, m)) {
+	                                l.insertFront(m);
+	                            }
+                        }                       
                         j = j - 2;
                     }
                     i = i - 2;
@@ -324,12 +359,96 @@ public class Board {
         return l;
     }
 
-    private boolean haveLeftChip(int side) {
-        if (side == 0) {
+    private boolean haveLeftChip(int color) {
+        if (color == Color.BLACK) {
             return Chip.bChipCount < 10;
         } else {
             return Chip.wChipCount < 10;
         }
+    }
+    
+    private DList start(int color) {
+     	if(color == Color.SPACE) {
+     		return null;
+     	}    		
+    		
+     	DList l = new DList();
+    		if(color == Color.BLACK) {
+    			for(int i=0;i<8;i++) {
+    				if(grid[i][0].color == color) {
+    					l.insertBack(grid[i][0]);
+    				}
+    			}  		
+    		}else {
+    			for(int i=0;i<8;i++) {
+    				if(grid[0][i].color == color) {
+    					l.insertBack(grid[0][i]);
+    				}
+    			}  		
+    		}
+    		return l;
+    }
+    private boolean isEndpoint(Chip c,int color) {
+    		if(color == Color.SPACE) {
+     		return false;
+     	}
+    		
+    		if(color == Color.BLACK) {
+    			if(c.y == 7) {
+    				return true;
+    			}   			
+    		}else {
+    			if(c.x == 7) {
+    				return true;
+    			}   			
+    		}
+    		return false;  		
+    }
+    private boolean isStartpoint(Chip c,int color) {
+		if(color == Color.SPACE) {
+ 		return false;
+ 	}
+		
+		if(color == Color.BLACK) {
+			if(c.y == 0) {
+				return true;
+			}   			
+		}else {
+			if(c.x == 0) {
+				return true;
+			}   			
+		}
+		return false;  		
+}
+    //c1->c2->c3
+    private boolean isTurning(Chip c1,Chip c2,Chip c3)
+    {
+    		if(direction(c1,c2)==direction(c2,c3)){
+    			return false;
+    		}else {
+    			return true;
+    		}
+    		
+    }
+    //c1,c2 is a pair;
+    //c1->c2
+    //return -1 for vertical; 1 for horizontal; 
+    // 2 for diagonal left_down && right_upper; 
+    //-2 for diagonal left_upper && right_down; 
+    // 0 for not connect
+    private int direction(Chip c1, Chip c2) {
+    		if(c1.x == c2.x) {
+    			return -1;
+    		}else if(c1.y == c2.y) {
+    			return 1;
+    		}else if((c1.x-c1.y) == (c2.x-c2.y)) {
+    			return -2;
+    		}else if((c1.x+c1.y) == (c2.x+c2.y)) {
+    			return 2;
+    		}else {
+    			return 0;
+    		}
+    		
     }
 
     /**
@@ -350,6 +469,185 @@ public class Board {
      **/
 
     public boolean hasValidNetwork(boolean side) {
-        return false;
+    		int color = MachinePlayer.checkColor(side);
+    		if(start(color) == null) {
+    			return false;
+    		}
+    		ListNode u = start(color).front();
+    		try {
+    			while(u.isValidNode()) {
+    				ListNode v = ((Chip)u.item()).findPair(this).front();
+    				while(v.isValidNode()) {
+    					boolean[][] key = new boolean[8][8];
+    					for(int i=0;i<8;i++) {
+    						for(int j=0;j<8;j++) {
+    							key[i][j] = false;
+    						}
+    					}
+    					((Chip)u.item()).marker(key);
+    					((Chip)v.item()).marker(key); 
+    					if(!findPath(u,v,color,key,2)){
+            				v = v.next();
+            			}else {
+            				return true;
+            			}  
+    				} 
+    				u = u.next();
+        		}
+    			return false;
+    		}catch(InvalidNodeException e)
+    		{ 
+    			return false;
+    		}
+    }
+    private boolean findPath(ListNode u,ListNode v,int color,boolean[][] key,int step)
+    {
+    		try {   			
+    			ListNode w = ((Chip)v.item()).findPair(this).front();    			
+        		while(w.isValidNode()) {        			 
+        			if(isTurning((Chip)u.item(),(Chip)v.item(),(Chip)w.item()))
+        			{
+        				//w is not visited
+        				if(!((Chip)w.item()).isVisited(key)) {
+        					((Chip)w.item()).marker(key); 
+            				//w is not an end point
+            				if(!isEndpoint((Chip)w.item(),color)) { 
+            					if(findPath(v,w,color,key,step+1)) {
+            						return true;
+            					}
+            				}
+            				//w is an end point
+            				else {            					          					
+            					if(step>=5){          						
+            						return true;
+            					}
+            				}     				
+            			}else {
+            				((Chip)w.item()).unmarker(key);
+                			step--;
+            			}        				        		
+        			}
+        			w = w.next();
+        		}        		
+    		}catch(InvalidNodeException e) {
+    			return false;
+    		}
+    		return false;
+    }
+    public void printBoard()
+    {
+    		int count=0;
+    		System.out.println("-----------------------------------------");
+    		for(int i=0;i<8;i++){
+    			for(int j=0;j<8;j++) {
+    				System.out.print("|"+Color.toString(grid[j][i].color));
+    				count++;
+    				if(count%8 == 0)
+    				{
+    					System.out.println("| _"+i);
+    					System.out.println("-----------------------------------------");
+    				}
+    			}
+    		}
+    		System.out.println("  0_   1_   2_   3_   4_   5_   6_   7_");
+    }
+    public void testIsValidMove()
+    {
+    	 	BufferedReader keyBoard =
+    	          new BufferedReader(new InputStreamReader(System.in));
+
+   		
+        //set a Move        
+        int color = Color.WHITE;
+        System.out.println("the color of the new movement is: "+Color.toString(color));
+        System.out.println("make a new movement");
+        System.out.println("Valid commands are: " +
+                "add, step, quit");
+        System.out.print("-->");
+        try {
+        		String moveKind = keyBoard.readLine();
+        		if(moveKind.equals("quit")){
+        			Move m = new Move();
+        			System.out.println("the movement is valid: "+isValidMove(color,m)); 	
+        		}
+            while(!moveKind.equals("quit")) {
+            		if(moveKind.equals("add")) {
+            			System.out.println("input position in which a chip is being added");
+            			System.out.print("input x-coordinates index-->");
+            			String x1 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index-->");
+            			String y1 = keyBoard.readLine();
+            			Move m = new Move(Integer.valueOf(x1).intValue(),Integer.valueOf(y1).intValue());
+            			System.out.println(m.toString());
+            			 //The move is or not valid
+            	        System.out.println("the movement is valid: "+isValidMove(color,m));
+            		}else if(moveKind.equals("step")) {
+            			System.out.println("input position in which a chip is being stepped");
+            			System.out.print("input x-coordinates index of new position-->");
+            			String x1 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index of new position-->");
+            			String y1 = keyBoard.readLine();
+            			System.out.print("input x-coordinates index of old position-->");
+            			String x2 = keyBoard.readLine();
+            			System.out.print("input y-coordinates index of old position-->");
+            			String y2 = keyBoard.readLine();
+            			Move m = new Move(Integer.valueOf(x1).intValue(),Integer.valueOf(y1).intValue(),
+            					Integer.valueOf(x2).intValue(),Integer.valueOf(y2).intValue());
+            			System.out.println(m.toString());
+            			 //The move is or not valid
+            	        System.out.println("the movement is valid: "+isValidMove(color,m));          			
+            		}else {
+          			  System.err.println("Invalid move: "+moveKind );
+            		}
+            		 System.out.println("-->");
+            		 moveKind = keyBoard.readLine();
+            }
+        }catch(IOException e) {
+        		System.out.println(e);
+        }
+    		
+    }
+    public void testGenerateValidMove()
+    {	
+    		int color = Color.WHITE;
+        System.out.println("the color of the new movement is: "+Color.toString(color));
+        System.out.println(generateValidMove(color).toString());
+    }
+    public void testHasValidNetwork()
+    {
+    		MachinePlayer.color = Color.WHITE;
+    		System.out.println("MachinePlayer is WHITE");
+    		System.out.println("there is a valid network for MachinePlayer: "+hasValidNetwork(MachinePlayer.COMPUTER));
+    		System.out.println("there is a valid network for OpponentPlayer: "+hasValidNetwork(MachinePlayer.OPPONENT));
+    }
+    public static void main(String[] args) {
+    	//set a Board
+		System.out.println("start to set a Board");
+		
+		Board b = new Board();
+		
+		b.grid[4][4].color = Color.WHITE;
+	    b.grid[1][1].color = Color.BLACK;
+	    b.grid[4][2].color = Color.WHITE;
+	    b.grid[4][6].color = Color.BLACK;
+	    b.grid[6][6].color = Color.WHITE;
+	    b.grid[2][3].color = Color.BLACK;
+	    
+	    b.grid[6][4].color = Color.WHITE;
+	    b.grid[4][7].color = Color.BLACK;
+	    
+	    b.grid[6][2].color = Color.WHITE;
+	    
+	    b.grid[2][4].color = Color.BLACK;
+	    b.grid[7][2].color = Color.WHITE;
+	    b.grid[2][0].color = Color.BLACK;
+	    
+	    b.printBoard();
+	    System.out.println("test isValidMove()");
+    		b.testIsValidMove();
+    		System.out.println("test generateValidMove()");
+    		b.testGenerateValidMove();
+    		System.out.println("test hasValidNetwork()");
+    		b.testHasValidNetwork();
     }
 }

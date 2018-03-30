@@ -8,10 +8,10 @@ package player;
  */
 public class MachinePlayer extends Player {
 
-    public final static boolean COMUPTER = true;
+    public final static boolean COMPUTER = true;
     public final static boolean OPPONENT = false;
 
-    public static Board board;
+    public static Board board =  new Board();
 
     public static int color;
     public int searchDepth;
@@ -34,8 +34,12 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Move move = new Move(2, 1);
-
+        Move move = board.chooseMove(MachinePlayer.COMPUTER, -46, 46, searchDepth, 0).move;
+        if(move != null) {
+        	 if(move.moveKind != Move.QUIT) {
+     			board.setBoard(move,color);
+         }   
+        }       
         return move;
     }
 
@@ -44,7 +48,16 @@ public class MachinePlayer extends Player {
     // illegal, returns false without modifying the internal state of "this"
     // player.  This method allows your opponents to inform you of their moves.
     public boolean opponentMove(Move m) {
-        return false;
+    		if(board.isValidMove(checkColor(MachinePlayer.OPPONENT),m))
+    		{
+    			if(m.moveKind != Move.QUIT) {
+        			board.setBoard(m,checkColor(MachinePlayer.OPPONENT));        			
+            } 
+    			return true;
+    		}else {
+    			return false;
+    		}
+        
     }
 
     // If the Move m is legal, records the move as a move by "this" player
@@ -53,7 +66,13 @@ public class MachinePlayer extends Player {
     // player.  This method is used to help set up "Network problems" for your
     // player to solve.
     public boolean forceMove(Move m) {
-        return false;
+    		if(board.isValidMove(color,m)) {
+    			if(m.moveKind != Move.QUIT) {
+        			board.setBoard(m,color);        			
+            }return true;
+    		}else {
+    			return false;
+    		}     
     }
 
     /**
@@ -64,11 +83,12 @@ public class MachinePlayer extends Player {
 
     public static int checkColor(boolean side) {
         int c;
-        if(side == COMUPTER) {
+        if(side == COMPUTER) {
             c = color;
         } else {
             c = Math.abs(1 - color);
         }
         return c;
     }
+    
 }

@@ -13,12 +13,13 @@ public class Chip {
     public int y;
     public static int bChipCount = 0;//count the number of black chips used.
     public static int wChipCount = 0;//count the number of white chips used.
-
+    
 
 
     
-    public boolean equals(Chip c) {
-        return c.color == color && c.x == x && c.y == y;
+    public boolean equals(Object c) {
+
+        return ((Chip)c).color == color && ((Chip)c).x == x && ((Chip)c).y == y;
 
     }
 
@@ -145,12 +146,29 @@ public class Chip {
         }
         return result;
     }
-
+    
+    protected boolean isVisited(boolean[][] key)
+    {
+    	 	return key[x][y];    	 	
+    }
+    protected void marker(boolean[][] key)
+    {
+    		key[x][y] = true;
+    		
+    }
+    protected void unmarker(boolean[][] key)
+    {
+    		key[x][y] = false;
+    }
     public String toString(){
         String s;
         s = "( " + x + " , " + y + " )";
         return s;
     }
+    
+   
+    
+    
     public static void main(String[] args) {
         Board b = new Board();
         b.grid[4][4].color = Color.WHITE;
@@ -163,7 +181,7 @@ public class Chip {
         b.grid[6][4].color = Color.WHITE;
         b.grid[2][4].color = Color.WHITE;
         b.grid[2][6].color = Color.WHITE;
-        DList l = b.grid[4][4].findPair(b);
+        DList l = b.grid[2][6].findPair(b);
         System.out.println(l.length());
     }
 
