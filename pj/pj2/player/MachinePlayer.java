@@ -68,8 +68,9 @@ public class MachinePlayer extends Player {
         Best reply;
         int color = checkColor(side);
         DList l; //  stores each move
+        l = board.generateValidMove(color);
 
-        if (mark == searchDepth || board.hasValidNetwork(side)) {
+        if (mark == searchDepth || board.hasValidNetwork(side) || l == null) {
             myBest.score = board.evaluate(side);
             myBest.move = null;
             return myBest;
@@ -81,7 +82,6 @@ public class MachinePlayer extends Player {
             myBest.score = beta;
         }
 
-        l = board.generateValidMove(color);
         ListNode n = l.front();
         while (n.isValidNode()) {
             try {
