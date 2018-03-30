@@ -171,4 +171,5 @@ public int evaluate(boolean side)
   *  @return Best objection that stores best move
   **/
 
-public Best chooseMove(boolean side, int alpha, int beta, int searchDepth, int mark) {
+ public Best findBest(boolean side, int alpha, int beta, int searchDepth, int mark)
+
