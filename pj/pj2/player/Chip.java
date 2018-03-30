@@ -162,7 +162,7 @@ public class Chip {
     }
     public String toString(){
         String s;
-        s = "( " + x + " , " + y + " )";
+        s = "( " + x + " , " + y + " , " + Color.toString(color) +")";
         return s;
     }
     
@@ -182,7 +182,8 @@ public class Chip {
         b.grid[2][4].color = Color.WHITE;
         b.grid[2][6].color = Color.WHITE;
         DList l = b.grid[2][6].findPair(b);
-        System.out.println(l.length());
+        b.printBoard();
+        System.out.println("\nPairs of " + b.grid[2][6] +" is " + l);
     }
 
 }
