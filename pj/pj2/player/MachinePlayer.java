@@ -52,6 +52,16 @@ public class MachinePlayer extends Player {
         return move;
     }
 
+    /**
+     *  find the best move
+     *  @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     *  @param alpha is the score that MachinePlayer.COMPUTER knows it can achieve(it should be initialized with -46 )
+     *  @param beta is the score that MachinePlayer.OPPONENT knows it can achieve(it should be initialized with 46 )
+     *  @param searchDepth is depth that this recursion can achieve
+     *  @param mark is used to record searchDepth (it should be initialized with 0)
+     *  @return Best objection that stores best move
+     **/
+
     public Best findBest(boolean side, int alpha, int beta, int searchDepth, int mark) {
         Board b = board;
         Best myBest = new Best();
