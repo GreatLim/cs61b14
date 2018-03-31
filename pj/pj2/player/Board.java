@@ -15,7 +15,9 @@ public class Board {
     public final static int DIMENSION = 8;
 
     public Chip[][] grid = new Chip[DIMENSION][DIMENSION];
-
+    public static int bChipCount = 0;//count the number of black chips used.
+    public static int wChipCount = 0;//count the number of white chips used.
+    
 
     public Board() {
         for (int i = 0; i < DIMENSION; i++) {
@@ -94,13 +96,18 @@ public class Board {
         if (m.moveKind == Move.STEP) {
             grid[m.x2][m.y2].color = Color.SPACE;
             Chip c2 = new Chip(m.x2, m.y2, color);//why?
+        }else {
+        		if(color == Color.BLACK) {
+        			Board.bChipCount ++;
+        		}else {
+        			Board.wChipCount ++;
+        		}
         }
         grid[m.x1][m.y1].color = color;
         return this;
     }
 
-    // discuss ChipList ???
-
+    
     protected void restoreBoard(Move m, int color) {
         // m1 is a move that reverses m
         if (m.moveKind == Move.STEP) {
@@ -108,6 +115,12 @@ public class Board {
             setBoard(m1, color);
         } else {
             grid[m.x1][m.y1].color = Color.SPACE;
+	        if(color == Color.BLACK) {
+	    			Board.bChipCount --;
+	    		}else {
+	    			Board.wChipCount --;
+	    		}
+
         }
     }
 
@@ -125,7 +138,7 @@ public class Board {
 
 
 
-    private DList generateGChipList(int color) {
+    private DList generateChipList(int color) {
         DList ChipList = new DList();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -156,7 +169,7 @@ public class Board {
             grid[m.x2][m.y2].color = Color.SPACE;
         }
         grid[m.x1][m.y1].color = color;
-        ListNode n = generateGChipList(color).front();
+        ListNode n = generateChipList(color).front();
         try {
             while (n.isValidNode()) {
                 if (isConnected(color, (Chip) n.item())) {
@@ -219,6 +232,15 @@ public class Board {
         if (m.moveKind == Move.QUIT) {
             return true;
         }
+        
+        //step condition
+         if(color == Color.BLACK && bChipCount <10 && m.moveKind == Move.STEP){
+        		return false;
+        	}
+         if(color == Color.WHITE && wChipCount <10 && m.moveKind == Move.STEP){
+     		return false;
+     	}
+        
         //rule3
         if ((m.x1 == 0 && m.y1 == 0) || (m.x1 == 0 && m.y1 == 7) || (m.x1 == 7 && m.y1 == 0) || (m.x1 == 7 && m.y1 == 7)) {
             return false;
@@ -233,7 +255,8 @@ public class Board {
         if (grid[m.x1][m.y1].color != Color.SPACE) {
             return false;
         }
-
+        
+        
         //rule4
         if (isConnected(color, m)) {
             return false;
@@ -260,6 +283,7 @@ public class Board {
 
         DList l = new DList();
         //add if haveLeftChip()=true
+        //System.out.print(haveLeftChip(color));
         if (haveLeftChip(color)) {
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
@@ -273,42 +297,39 @@ public class Board {
         //step
         //if chip.color==color, x=chip.x, y..;
 
-
-        try {
-            ListNode n = generateGChipList(color).front();
-            while (n.isValidNode()) {
-                int x = ((Chip) n.item()).x,
-                        y = ((Chip) n.item()).y;
-                int i = 1;
-                while (i >= -1) {
-                    int j = 1;
-                    while (j >= -1) {
-                        Move m = new Move(x + i, y + j);
-                        if (x + i >= 0 && x + i < 8 && y + j >= 0 && y + j < 8) {
-                            if (isValidMove(color, m)) {
-                                l.insertFront(m);
-                            }
+        else {
+        		try {
+                ListNode n = generateChipList(color).front();
+                while (n.isValidNode()) {
+                    int x = ((Chip) n.item()).x,
+                            y = ((Chip) n.item()).y;
+                    grid[x][y].color = Color.SPACE;
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                        		Move m = new Move(i,j,x,y);
+                        		 if (isValidMove(color, m)) {
+                                     l.insertFront(m);
+                                 }
                         }
-                        j = j - 2;
-                    }
-                    i = i - 2;
+                     }
+
+                    n = n.next();
                 }
 
-                n = n.next();
+            } catch (InvalidNodeException e) {
+                System.out.println(e);
             }
-
-        } catch (InvalidNodeException e) {
-            System.out.println(e);
         }
+        
 
         return l;
     }
 
     private boolean haveLeftChip(int color) {
         if (color == Color.BLACK) {
-            return Chip.bChipCount < 10;
+            return Board.bChipCount < 10;
         } else {
-            return Chip.wChipCount < 10;
+            return Board.wChipCount < 10;
         }
     }
 
@@ -593,9 +614,15 @@ public class Board {
         b.grid[4][6].color = Color.BLACK;
         b.grid[6][6].color = Color.WHITE;
         b.grid[2][3].color = Color.BLACK;
+        
+        System.out.println("\n------ test generateValidMove() ------");
+        b.testGenerateValidMove();
 
         b.grid[6][4].color = Color.WHITE;
         b.grid[4][7].color = Color.BLACK;
+        
+        System.out.println("\n------ test generateValidMove() ------");
+        b.testGenerateValidMove();
 
         b.grid[6][2].color = Color.WHITE;
 
@@ -605,9 +632,10 @@ public class Board {
 
         b.printBoard();
         //System.out.println("------ test isValidMove() ------");
-        //b.testIsValidMove();
+        b.testIsValidMove();
         System.out.println("\n------ test generateValidMove() ------");
         b.testGenerateValidMove();
+        
         System.out.println("\n------ test hasValidNetwork() ------");
         b.testHasValidNetwork();
 

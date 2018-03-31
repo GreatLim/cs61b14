@@ -68,7 +68,9 @@ public class MachinePlayer extends Player {
         Best reply;
         int color = checkColor(side);
         DList l; //  stores each move
+        //board.printBoard();
         l = board.generateValidMove(color);
+        //System.out.println(l.toString());
 
         if (mark == searchDepth || board.hasValidNetwork(side) || l == null) {
             myBest.score = board.evaluate(side);
