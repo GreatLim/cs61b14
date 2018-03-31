@@ -59,6 +59,7 @@ public class Board {
         int PairNum1 = getPairNum(side);
         // pair number of opponent side
         int PairNum2 = getPairNum(!side);
+
         if (this.hasValidNetwork(side)) {
             return 46;
         } else if(this.hasValidNetwork(!side)) {
@@ -631,7 +632,7 @@ public class Board {
         b.grid[2][0].color = Color.BLACK;
 
         b.printBoard();
-        //System.out.println("------ test isValidMove() ------");
+        System.out.println("------ test isValidMove() ------");
         b.testIsValidMove();
         System.out.println("\n------ test generateValidMove() ------");
         b.testGenerateValidMove();

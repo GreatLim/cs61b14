@@ -19,7 +19,7 @@ public class MachinePlayer extends Player {
     public final static boolean COMPUTER = true;
     public final static boolean OPPONENT = false;
 
-    public static Board board = new Board();
+    public Board board = new Board();
 
     public static int color;
     public int searchDepth;
@@ -73,12 +73,12 @@ public class MachinePlayer extends Player {
         //System.out.println(l.toString());
 
         if (mark == searchDepth || board.hasValidNetwork(side) || l == null) {
-            myBest.score = board.evaluate(side);
+            myBest.score = board.evaluate(COMPUTER);
             myBest.move = null;
             return myBest;
         }
 
-        if (side == MachinePlayer.COMPUTER) {
+        if (side == COMPUTER) {
             myBest.score = alpha;
         } else {
             myBest.score = beta;
@@ -93,11 +93,11 @@ public class MachinePlayer extends Player {
                 reply = findBest(!side, alpha, beta, searchDepth, mark);
                 board.restoreBoard((Move) n.item(), color);
                 mark --;
-                if (side == MachinePlayer.COMPUTER && reply.score > myBest.score) {
+                if (side == COMPUTER && reply.score > myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     alpha = reply.score;
-                } else if (side == MachinePlayer.OPPONENT && reply.score < myBest.score) {
+                } else if (side == OPPONENT && reply.score < myBest.score) {
                     myBest.move = m;
                     myBest.score = reply.score;
                     beta = reply.score;
@@ -166,7 +166,7 @@ public class MachinePlayer extends Player {
 
     public static void testFindBest() {
         BufferedReader keyBoard = new BufferedReader(new InputStreamReader(System.in));
-        MachinePlayer p = new MachinePlayer(Color.WHITE,2);
+        MachinePlayer p = new MachinePlayer(Color.WHITE,3);
         Board b = p.board;
         while(!b.hasValidNetwork(p.COMPUTER) || !b.hasValidNetwork(p.OPPONENT)) {
             System.out.println("Computer move: ");
