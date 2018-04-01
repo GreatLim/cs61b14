@@ -47,39 +47,6 @@ public class Board {
         grid[c.x][c.y].color = Color.SPACE;
     }
 
-    /**
-     * evaluate the game board and give a score
-     *
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @return score for the game board
-     */
-
-    public int evaluate(boolean side) {
-        // pair number of this side
-        int PairNum1 = getPairNum(side);
-        // pair number of opponent side
-        int PairNum2 = getPairNum(!side);
-        if (this.hasValidNetwork(side)) {
-            return 46;
-        } else if(this.hasValidNetwork(!side)) {
-            return -46;
-        } else {
-            return PairNum1 - PairNum2;
-        }
-    }
-
-    public int getPairNum(boolean side) {
-        int c = MachinePlayer.checkColor(side);
-        int sum = 0;
-        for (int i = 0; i < DIMENSION; i++) {
-            for (int j = 0; j < DIMENSION; j++) {
-                if (grid[i][j].color == c) {
-                    sum += grid[i][j].findPair(this).length();
-                }
-            }
-        }
-        return sum / 2;
-    }
 
 
     /**
@@ -333,7 +300,7 @@ public class Board {
         }
     }
 
-    private DList start(int color) {
+    DList start(int color) {
         if (color == Color.SPACE) {
             return null;
         }
@@ -420,56 +387,8 @@ public class Board {
 
     }
 
-    /**
-     * hasValidNetwork() determines whether "this" GameBoard has a valid network
-     * for player "side".  (Does not check whether the opponent has a network.)
-     * A full description of what constitutes a valid network appears in the
-     * project "readme" file.
-     * <p>
-     * Unusual conditions:
-     * If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
-     * returns false.
-     * If GameBoard squares contain illegal values, the behavior of this
-     * method is undefined (i.e., don't expect any reasonable behavior).
-     *
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @return true if player "side" has a winning network in "this" GameBoard;
-     * false otherwise.
-     **/
-
-    public boolean hasValidNetwork(boolean side) {
-        int color = MachinePlayer.checkColor(side);
-        if (start(color) == null) {
-            return false;
-        }
-        ListNode u = start(color).front();
-        try {
-            while (u.isValidNode()) {
-                ListNode v = ((Chip) u.item()).findPair(this).front();
-                while (v.isValidNode()) {
-                    boolean[][] key = new boolean[8][8];
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            key[i][j] = false;
-                        }
-                    }
-                    ((Chip) u.item()).marker(key);
-                    ((Chip) v.item()).marker(key);
-                    if (!findPath(u, v, color, key, 2)) {
-                        v = v.next();
-                    } else {
-                        return true;
-                    }
-                }
-                u = u.next();
-            }
-            return false;
-        } catch (InvalidNodeException e) {
-            return false;
-        }
-    }
-
-    private boolean findPath(ListNode u, ListNode v, int color, boolean[][] key, int step) {
+      
+    boolean findPath(ListNode u, ListNode v, int color, boolean[][] key, int step) {
         try {
             ListNode w = ((Chip) v.item()).findPair(this).front();
             while (w.isValidNode()) {
@@ -593,13 +512,7 @@ public class Board {
         System.out.println(generateValidMove(color).toString());
     }
 
-    public void testHasValidNetwork() {
-        MachinePlayer.color = Color.WHITE;
-        System.out.println("MachinePlayer is WHITE");
-        System.out.println("there is a valid network for MachinePlayer: " + hasValidNetwork(MachinePlayer.COMPUTER));
-        System.out.println("there is a valid network for OpponentPlayer: " + hasValidNetwork(MachinePlayer.OPPONENT));
-    }
-
+   
 
 
     public static void main(String[] args) {
@@ -637,7 +550,7 @@ public class Board {
         b.testGenerateValidMove();
         
         System.out.println("\n------ test hasValidNetwork() ------");
-        b.testHasValidNetwork();
+        
 
 
 
