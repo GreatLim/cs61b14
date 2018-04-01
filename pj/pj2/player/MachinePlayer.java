@@ -21,6 +21,7 @@ public class MachinePlayer extends Player {
     
     public Board board = new Board();
 
+
     public int color;
     public int searchDepth;
     public static boolean side;
@@ -72,8 +73,10 @@ public class MachinePlayer extends Player {
         l = board.generateValidMove(color);
         //System.out.println(l.toString());
 
+
         if (mark == searchDepth || hasValidNetwork(side) || l == null) {
             myBest.score = evaluate(COMPUTER);
+
             myBest.move = null;
             return myBest;
         }

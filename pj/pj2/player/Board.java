@@ -49,6 +49,7 @@ public class Board {
 
 
 
+
     /**
      * set the Board for
      *
@@ -544,7 +545,7 @@ public class Board {
         b.grid[2][0].color = Color.BLACK;
 
         b.printBoard();
-        //System.out.println("------ test isValidMove() ------");
+        System.out.println("------ test isValidMove() ------");
         b.testIsValidMove();
         System.out.println("\n------ test generateValidMove() ------");
         b.testGenerateValidMove();
