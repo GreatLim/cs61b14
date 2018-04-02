@@ -43,7 +43,7 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Move move = findBest(MachinePlayer.COMPUTER, -46, 46, 2, 0).move;
+        Move move = findBest(MachinePlayer.COMPUTER, -46, 46, 6, 0).move;
         if (move != null) {
             if (move.moveKind != Move.QUIT) {
                 board.setBoard(move, color);
@@ -71,8 +71,7 @@ public class MachinePlayer extends Player {
         DList l; //  stores each move
         //board.printBoard();
         l = board.generateValidMove(color);
-        //System.out.println(l.toString());
-
+        
 
         if (mark == searchDepth || hasValidNetwork(side) || l == null) {
             myBest.score = evaluate(COMPUTER);

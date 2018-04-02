@@ -64,12 +64,6 @@ public class Board {
         if (m.moveKind == Move.STEP) {
             grid[m.x2][m.y2].color = Color.SPACE;
             Chip c2 = new Chip(m.x2, m.y2, color);//why?
-        }else {
-        		if(color == Color.BLACK) {
-        			Board.bChipCount ++;
-        		}else {
-        			Board.wChipCount ++;
-        		}
         }
         grid[m.x1][m.y1].color = color;
         return this;
@@ -83,12 +77,6 @@ public class Board {
             setBoard(m1, color);
         } else {
             grid[m.x1][m.y1].color = Color.SPACE;
-	        if(color == Color.BLACK) {
-	    			Board.bChipCount --;
-	    		}else {
-	    			Board.wChipCount --;
-	    		}
-
         }
     }
 
@@ -289,15 +277,29 @@ public class Board {
             }
         }
         
-
+        if(l == null)
+    			System.out.println("error!");
         return l;
     }
 
     private boolean haveLeftChip(int color) {
+     	bChipCount = 0;
+     	wChipCount = 0;
+    		for(int i=0;i<8;i++)
+    		{
+    			for(int j=0;j<8;j++) {
+    				if (grid[i][j].color == Color.BLACK) {
+    		            bChipCount++;
+    		        } 
+    				if (grid[i][j].color == Color.WHITE) {
+    		            wChipCount++;
+    		        } 
+    			}
+    		}
         if (color == Color.BLACK) {
-            return Board.bChipCount < 10;
+            return bChipCount < 10;
         } else {
-            return Board.wChipCount < 10;
+            return wChipCount < 10;
         }
     }
 
@@ -401,19 +403,20 @@ public class Board {
                         if (!isEndpoint((Chip) w.item(), color)) {
                             if (findPath(v, w, color, key, step + 1)) {
                                 return true;
+                            }else {
+                            		((Chip) w.item()).unmarker(key);
                             }
                         }
                         //w is an end point
                         else {
                             if (step >= 5) {
                                 return true;
+                            }else {
+                            		((Chip) w.item()).unmarker(key);
                             }
                         }
-                    } else {
-                        ((Chip) w.item()).unmarker(key);
-                        step--;
-                    }
-                }
+                    } 
+                }                
                 w = w.next();
             }
         } catch (InvalidNodeException e) {
@@ -436,6 +439,8 @@ public class Board {
             }
         }
         System.out.println("  0_   1_   2_   3_   4_   5_   6_   7_\n");
+        System.out.println("bChipCount: "+bChipCount);
+        System.out.println("wChipCount: "+wChipCount);
     }
 
     public String toString() {
@@ -551,10 +556,5 @@ public class Board {
         b.testGenerateValidMove();
         
         System.out.println("\n------ test hasValidNetwork() ------");
-        
-
-
-
-
     }
 }
