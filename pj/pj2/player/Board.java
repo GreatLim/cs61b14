@@ -47,40 +47,7 @@ public class Board {
         grid[c.x][c.y].color = Color.SPACE;
     }
 
-    /**
-     * evaluate the game board and give a score
-     *
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @return score for the game board
-     */
 
-    public int evaluate(boolean side) {
-        // pair number of this side
-        int PairNum1 = getPairNum(side);
-        // pair number of opponent side
-        int PairNum2 = getPairNum(!side);
-
-        if (this.hasValidNetwork(side)) {
-            return 46;
-        } else if(this.hasValidNetwork(!side)) {
-            return -46;
-        } else {
-            return PairNum1 - PairNum2;
-        }
-    }
-
-    public int getPairNum(boolean side) {
-        int c = MachinePlayer.checkColor(side);
-        int sum = 0;
-        for (int i = 0; i < DIMENSION; i++) {
-            for (int j = 0; j < DIMENSION; j++) {
-                if (grid[i][j].color == c) {
-                    sum += grid[i][j].findPair(this).length();
-                }
-            }
-        }
-        return sum / 2;
-    }
 
 
     /**
@@ -97,12 +64,6 @@ public class Board {
         if (m.moveKind == Move.STEP) {
             grid[m.x2][m.y2].color = Color.SPACE;
             Chip c2 = new Chip(m.x2, m.y2, color);//why?
-        }else {
-        		if(color == Color.BLACK) {
-        			Board.bChipCount ++;
-        		}else {
-        			Board.wChipCount ++;
-        		}
         }
         grid[m.x1][m.y1].color = color;
         return this;
@@ -116,12 +77,6 @@ public class Board {
             setBoard(m1, color);
         } else {
             grid[m.x1][m.y1].color = Color.SPACE;
-	        if(color == Color.BLACK) {
-	    			Board.bChipCount --;
-	    		}else {
-	    			Board.wChipCount --;
-	    		}
-
         }
     }
 
@@ -322,19 +277,33 @@ public class Board {
             }
         }
         
-
+        if(l == null)
+    			System.out.println("error!");
         return l;
     }
 
     private boolean haveLeftChip(int color) {
+     	bChipCount = 0;
+     	wChipCount = 0;
+    		for(int i=0;i<8;i++)
+    		{
+    			for(int j=0;j<8;j++) {
+    				if (grid[i][j].color == Color.BLACK) {
+    		            bChipCount++;
+    		        } 
+    				if (grid[i][j].color == Color.WHITE) {
+    		            wChipCount++;
+    		        } 
+    			}
+    		}
         if (color == Color.BLACK) {
-            return Board.bChipCount < 10;
+            return bChipCount < 10;
         } else {
-            return Board.wChipCount < 10;
+            return wChipCount < 10;
         }
     }
 
-    private DList start(int color) {
+    DList start(int color) {
         if (color == Color.SPACE) {
             return null;
         }
@@ -421,56 +390,8 @@ public class Board {
 
     }
 
-    /**
-     * hasValidNetwork() determines whether "this" GameBoard has a valid network
-     * for player "side".  (Does not check whether the opponent has a network.)
-     * A full description of what constitutes a valid network appears in the
-     * project "readme" file.
-     * <p>
-     * Unusual conditions:
-     * If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
-     * returns false.
-     * If GameBoard squares contain illegal values, the behavior of this
-     * method is undefined (i.e., don't expect any reasonable behavior).
-     *
-     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
-     * @return true if player "side" has a winning network in "this" GameBoard;
-     * false otherwise.
-     **/
-
-    public boolean hasValidNetwork(boolean side) {
-        int color = MachinePlayer.checkColor(side);
-        if (start(color) == null) {
-            return false;
-        }
-        ListNode u = start(color).front();
-        try {
-            while (u.isValidNode()) {
-                ListNode v = ((Chip) u.item()).findPair(this).front();
-                while (v.isValidNode()) {
-                    boolean[][] key = new boolean[8][8];
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            key[i][j] = false;
-                        }
-                    }
-                    ((Chip) u.item()).marker(key);
-                    ((Chip) v.item()).marker(key);
-                    if (!findPath(u, v, color, key, 2)) {
-                        v = v.next();
-                    } else {
-                        return true;
-                    }
-                }
-                u = u.next();
-            }
-            return false;
-        } catch (InvalidNodeException e) {
-            return false;
-        }
-    }
-
-    private boolean findPath(ListNode u, ListNode v, int color, boolean[][] key, int step) {
+      
+    boolean findPath(ListNode u, ListNode v, int color, boolean[][] key, int step) {
         try {
             ListNode w = ((Chip) v.item()).findPair(this).front();
             while (w.isValidNode()) {
@@ -482,19 +403,20 @@ public class Board {
                         if (!isEndpoint((Chip) w.item(), color)) {
                             if (findPath(v, w, color, key, step + 1)) {
                                 return true;
+                            }else {
+                            		((Chip) w.item()).unmarker(key);
                             }
                         }
                         //w is an end point
                         else {
                             if (step >= 5) {
                                 return true;
+                            }else {
+                            		((Chip) w.item()).unmarker(key);
                             }
                         }
-                    } else {
-                        ((Chip) w.item()).unmarker(key);
-                        step--;
-                    }
-                }
+                    } 
+                }                
                 w = w.next();
             }
         } catch (InvalidNodeException e) {
@@ -517,6 +439,8 @@ public class Board {
             }
         }
         System.out.println("  0_   1_   2_   3_   4_   5_   6_   7_\n");
+        System.out.println("bChipCount: "+bChipCount);
+        System.out.println("wChipCount: "+wChipCount);
     }
 
     public String toString() {
@@ -594,13 +518,7 @@ public class Board {
         System.out.println(generateValidMove(color).toString());
     }
 
-    public void testHasValidNetwork() {
-        MachinePlayer.color = Color.WHITE;
-        System.out.println("MachinePlayer is WHITE");
-        System.out.println("there is a valid network for MachinePlayer: " + hasValidNetwork(MachinePlayer.COMPUTER));
-        System.out.println("there is a valid network for OpponentPlayer: " + hasValidNetwork(MachinePlayer.OPPONENT));
-    }
-
+   
 
 
     public static void main(String[] args) {
@@ -638,10 +556,5 @@ public class Board {
         b.testGenerateValidMove();
         
         System.out.println("\n------ test hasValidNetwork() ------");
-        b.testHasValidNetwork();
-
-
-
-
     }
 }

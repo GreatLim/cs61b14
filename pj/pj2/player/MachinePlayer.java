@@ -18,10 +18,11 @@ public class MachinePlayer extends Player {
 
     public final static boolean COMPUTER = true;
     public final static boolean OPPONENT = false;
-
+    
     public Board board = new Board();
 
-    public static int color;
+
+    public int color;
     public int searchDepth;
     public static boolean side;
 
@@ -42,7 +43,7 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Move move = findBest(MachinePlayer.COMPUTER, -46, 46, 2, 0).move;
+        Move move = findBest(MachinePlayer.COMPUTER, -46, 46, 6, 0).move;
         if (move != null) {
             if (move.moveKind != Move.QUIT) {
                 board.setBoard(move, color);
@@ -70,10 +71,11 @@ public class MachinePlayer extends Player {
         DList l; //  stores each move
         //board.printBoard();
         l = board.generateValidMove(color);
-        //System.out.println(l.toString());
+        
 
-        if (mark == searchDepth || board.hasValidNetwork(side) || l == null) {
-            myBest.score = board.evaluate(COMPUTER);
+        if (mark == searchDepth || hasValidNetwork(side) || l == null) {
+            myBest.score = evaluate(COMPUTER);
+
             myBest.move = null;
             return myBest;
         }
@@ -154,7 +156,7 @@ public class MachinePlayer extends Player {
      * @return color of the side
      */
 
-    public static int checkColor(boolean side) {
+    public int checkColor(boolean side) {
         int c;
         if (side == COMPUTER) {
             c = color;
@@ -163,12 +165,94 @@ public class MachinePlayer extends Player {
         }
         return c;
     }
+    
+    /**
+     * evaluate the game board and give a score
+     *
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return score for the game board
+     */
+    public int evaluate(boolean side) {
+        // pair number of this side
+        int PairNum1 = getPairNum(side);
+        // pair number of opponent side
+        int PairNum2 = getPairNum(!side);
+        if (this.hasValidNetwork(side)) {
+            return 46;
+        } else if(this.hasValidNetwork(!side)) {
+            return -46;
+        } else {
+            return PairNum1 - PairNum2;
+        }
+    }
+    
+    public int getPairNum(boolean side) {
+        int c = checkColor(side);
+        int sum = 0;
+        for (int i = 0; i <  board.DIMENSION; i++) {
+            for (int j = 0; j < board.DIMENSION; j++) {
+                if (board.grid[i][j].color == c) {
+                    sum += board.grid[i][j].findPair(board).length();
+                }
+            }
+        }
+        return sum / 2;
+    }
+    
+    /**
+     * hasValidNetwork() determines whether "this" GameBoard has a valid network
+     * for player "side".  (Does not check whether the opponent has a network.)
+     * A full description of what constitutes a valid network appears in the
+     * project "readme" file.
+     * <p>
+     * Unusual conditions:
+     * If side is neither MachinePlayer.COMPUTER nor MachinePlayer.OPPONENT,
+     * returns false.
+     * If GameBoard squares contain illegal values, the behavior of this
+     * method is undefined (i.e., don't expect any reasonable behavior).
+     *
+     * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
+     * @return true if player "side" has a winning network in "this" GameBoard;
+     * false otherwise.
+     **/
+    public boolean hasValidNetwork(boolean side) {
+        int color = checkColor(side);
+        if (board.start(color) == null) {
+            return false;
+        }
+        ListNode u = board.start(color).front();
+        try {
+            while (u.isValidNode()) {
+                ListNode v = ((Chip) u.item()).findPair(board).front();
+                while (v.isValidNode()) {
+                    boolean[][] key = new boolean[8][8];
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                            key[i][j] = false;
+                        }
+                    }
+                    ((Chip) u.item()).marker(key);
+                    ((Chip) v.item()).marker(key);
+                    if (!board.findPath(u, v, color, key, 2)) {
+                        v = v.next();
+                    } else {
+                        return true;
+                    }
+                }
+                u = u.next();
+            }
+            return false;
+        } catch (InvalidNodeException e) {
+            return false;
+        }
+    }
 
-    public static void testFindBest() {
+
+    public void testFindBest() {
         BufferedReader keyBoard = new BufferedReader(new InputStreamReader(System.in));
         MachinePlayer p = new MachinePlayer(Color.WHITE,3);
         Board b = p.board;
-        while(!b.hasValidNetwork(p.COMPUTER) || !b.hasValidNetwork(p.OPPONENT)) {
+        while(!hasValidNetwork(p.COMPUTER) || !hasValidNetwork(p.OPPONENT)) {
             System.out.println("Computer move: ");
             System.out.println(p.chooseMove() + "\n");
             try {
@@ -184,9 +268,17 @@ public class MachinePlayer extends Player {
             }
         }
     }
+    
+    public void testHasValidNetwork() {
+        color = Color.WHITE;
+        System.out.println("MachinePlayer is WHITE");
+        System.out.println("there is a valid network for MachinePlayer: " + hasValidNetwork(MachinePlayer.COMPUTER));
+        System.out.println("there is a valid network for OpponentPlayer: " + hasValidNetwork(MachinePlayer.OPPONENT));
+    }
 
     public static void main(String[] args){
+    		MachinePlayer p = new MachinePlayer(Color.WHITE);
         System.out.println("\n------ test testFindBest() ------");
-        testFindBest();
+        p.testFindBest();
     }
 }
