@@ -43,11 +43,13 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Move move = findBest(MachinePlayer.COMPUTER, -46, 46, 6, 0).move;
+        Best best = findBest(MachinePlayer.COMPUTER, Integer.MIN_VALUE, Integer.MAX_VALUE, 4, 0);
+        Move move = best.move;
         if (move != null) {
             if (move.moveKind != Move.QUIT) {
                 board.setBoard(move, color);
-                board.printBoard();
+                //board.printBoard();
+                //System.out.println("score: " + best.score);
             }
         }
         return move;
@@ -75,8 +77,11 @@ public class MachinePlayer extends Player {
 
         if (mark == searchDepth || hasValidNetwork(side) || l == null) {
             myBest.score = evaluate(COMPUTER);
-
             myBest.move = null;
+            if(hasValidNetwork(side)){
+                testFindBestPrinter(side, mark, myBest);
+            }
+            //testFindBestPrinter(side, mark, myBest);
             return myBest;
         }
 
@@ -105,6 +110,7 @@ public class MachinePlayer extends Player {
                     beta = reply.score;
                 }
                 if (alpha >= beta) {
+                    //testFindBestPrinter(side, mark, myBest);
                     return myBest;
                 }
                 n = n.next();
@@ -112,8 +118,35 @@ public class MachinePlayer extends Player {
                 System.out.print(e);
             }
         }
+        //testFindBestPrinter(side, mark, myBest);
         return myBest;
     }
+
+    public int evaluate(boolean side) {
+        // pair number of this side
+        int PairNum1 = getPairNum(side);
+        // pair number of opponent side
+        int PairNum2 = getPairNum(!side);
+        if (this.hasValidNetwork(side)) {
+            return Integer.MAX_VALUE;
+        } else if(this.hasValidNetwork(!side)) {
+            return Integer.MIN_VALUE;
+        } else {
+            return PairNum1 - 2 * PairNum2;
+        }
+    }
+
+    private void testFindBestPrinter(boolean side, int mark, Best myBest){
+        if(mark <= 2) {
+            board.printBoard();
+            if(side == COMPUTER) {
+                System.out.println("side: computer");
+            }
+            System.out.println("mark: " + mark);
+            System.out.println("score: " + myBest.score);
+        }
+    }
+
 
 
     // If the Move m is legal, records the move as a move by the opponent
@@ -124,7 +157,7 @@ public class MachinePlayer extends Player {
         if (board.isValidMove(checkColor(MachinePlayer.OPPONENT), m)) {
             if (m.moveKind != Move.QUIT) {
                 board.setBoard(m, checkColor(MachinePlayer.OPPONENT));
-                board.printBoard();
+                //board.printBoard();
             }
             return true;
         } else {
@@ -172,19 +205,7 @@ public class MachinePlayer extends Player {
      * @param side is MachinePlayer.COMPUTER or MachinePlayer.OPPONENT
      * @return score for the game board
      */
-    public int evaluate(boolean side) {
-        // pair number of this side
-        int PairNum1 = getPairNum(side);
-        // pair number of opponent side
-        int PairNum2 = getPairNum(!side);
-        if (this.hasValidNetwork(side)) {
-            return 46;
-        } else if(this.hasValidNetwork(!side)) {
-            return -46;
-        } else {
-            return PairNum1 - PairNum2;
-        }
-    }
+
     
     public int getPairNum(boolean side) {
         int c = checkColor(side);
@@ -277,7 +298,7 @@ public class MachinePlayer extends Player {
     }
 
     public static void main(String[] args){
-    		MachinePlayer p = new MachinePlayer(Color.WHITE);
+        MachinePlayer p = new MachinePlayer(Color.WHITE);
         System.out.println("\n------ test testFindBest() ------");
         p.testFindBest();
     }

@@ -534,14 +534,14 @@ public class Board {
         b.grid[6][6].color = Color.WHITE;
         b.grid[2][3].color = Color.BLACK;
         
-        System.out.println("\n------ test generateValidMove() ------");
-        b.testGenerateValidMove();
+        //System.out.println("\n------ test generateValidMove() ------");
+        //b.testGenerateValidMove();
 
         b.grid[6][4].color = Color.WHITE;
         b.grid[4][7].color = Color.BLACK;
         
-        System.out.println("\n------ test generateValidMove() ------");
-        b.testGenerateValidMove();
+        //System.out.println("\n------ test generateValidMove() ------");
+        //b.testGenerateValidMove();
 
         b.grid[6][2].color = Color.WHITE;
 
@@ -550,11 +550,20 @@ public class Board {
         b.grid[2][0].color = Color.BLACK;
 
         b.printBoard();
-        System.out.println("------ test isValidMove() ------");
-        b.testIsValidMove();
-        System.out.println("\n------ test generateValidMove() ------");
-        b.testGenerateValidMove();
+        //System.out.println("------ test isValidMove() ------");
+        //b.testIsValidMove();
+        //System.out.println("\n------ test generateValidMove() ------");
+        //b.testGenerateValidMove();
         
         System.out.println("\n------ test hasValidNetwork() ------");
+//        MachinePlayer p = new MachinePlayer(Color.WHITE);
+//        p.board.grid[1][1].color = Color.WHITE;
+//        p.board.grid[2][1].color = Color.WHITE;
+//        p.board.grid[4][1].color = Color.WHITE;
+//        p.board.grid[5][1].color = Color.WHITE;
+//        p.board.grid[7][1].color = Color.WHITE;
+//        p.board.grid[0][2].color = Color.WHITE;
+//        System.out.println(p.hasValidNetwork(MachinePlayer.COMPUTER));
+
     }
 }

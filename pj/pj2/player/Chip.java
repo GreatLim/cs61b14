@@ -37,104 +37,129 @@ public class Chip {
         if(color == Color.SPACE) {
             return null;
         } else {
-            for(int i = x + 1; i < 8; i++) {
-                int temp = b.grid[i][y].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, y , temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
+            DList l1 = findHorizonPair(b);
+            DList l2 = findVerticalPair(b);
+            DList l3 = findDiagonal1Pair(b);
+            DList l4 = findDiagonal2Pair(b);
+            result = l1.connect(l2).connect(l3).connect(l4);
+        }
+        return result;
+    }
 
-            for(int i = x - 1; i >= 0; i--) {
-                int temp = b.grid[i][y].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, y , temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
 
-            for(int j = y + 1; j < 8; j++) {
-                int temp = b.grid[x][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(x, j , temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
+    public DList findHorizonPair(Board b) {
+        DList result = new DList();
+        for(int i = x + 1; i < 8; i++) {
+            int temp = b.grid[i][y].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, y , temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
             }
+        }
 
-            for(int j = y - 1; j >= 0; j--) {
-                int temp = b.grid[x][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(x, j , temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
-
-            for(int i = x + 1, j = y + 1; i < 8 && j < 8; i++, j++) {
-                int temp = b.grid[i][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, j, temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
-
-            for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
-                int temp = b.grid[i][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, j, temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
-
-            for(int i = x + 1, j = y - 1; i < 8 && j >= 0; i++, j--) {
-                int temp = b.grid[i][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, j, temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
-            }
-
-            for(int i = x - 1, j = y + 1; i >= 0 && j < 8; i--, j++) {
-                int temp = b.grid[i][j].color;
-                if(temp == color) {
-                    result.insertBack(new Chip(i, j, temp));
-                    break;
-                } else if(temp == Color.SPACE) {
-                    continue;
-                } else {
-                    break;
-                }
+        for(int i = x - 1; i >= 0; i--) {
+            int temp = b.grid[i][y].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, y , temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
             }
         }
         return result;
     }
+
+    public DList findVerticalPair(Board b) {
+        DList result = new DList();
+        for(int j = y + 1; j < 8; j++) {
+            int temp = b.grid[x][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(x, j , temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        for(int j = y - 1; j >= 0; j--) {
+            int temp = b.grid[x][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(x, j , temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
+    public DList findDiagonal1Pair(Board b) {
+        DList result = new DList();
+        for(int i = x + 1, j = y + 1; i < 8 && j < 8; i++, j++) {
+            int temp = b.grid[i][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, j, temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        for(int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+            int temp = b.grid[i][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, j, temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
+    private DList findDiagonal2Pair(Board b) {
+        DList result = new DList();
+        for(int i = x + 1, j = y - 1; i < 8 && j >= 0; i++, j--) {
+            int temp = b.grid[i][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, j, temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        for(int i = x - 1, j = y + 1; i >= 0 && j < 8; i--, j++) {
+            int temp = b.grid[i][j].color;
+            if(temp == color) {
+                result.insertBack(new Chip(i, j, temp));
+                break;
+            } else if(temp == Color.SPACE) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
+
     
     protected boolean isVisited(boolean[][] key)
     {
@@ -154,6 +179,7 @@ public class Chip {
         s = "( " + x + " , " + y + " , " + Color.toString(color) +")";
         return s;
     }
+
     
    
     
