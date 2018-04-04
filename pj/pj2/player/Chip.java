@@ -131,7 +131,7 @@ public class Chip {
         return result;
     }
 
-    private DList findDiagonal2Pair(Board b) {
+    public DList findDiagonal2Pair(Board b) {
         DList result = new DList();
         for(int i = x + 1, j = y - 1; i < 8 && j >= 0; i++, j--) {
             int temp = b.grid[i][j].color;

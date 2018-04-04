@@ -43,7 +43,7 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Best best = findBest(MachinePlayer.COMPUTER, Integer.MIN_VALUE, Integer.MAX_VALUE, 4, 0);
+        Best best = findBest(MachinePlayer.COMPUTER, Integer.MIN_VALUE, Integer.MAX_VALUE,3, 0);
         Move move = best.move;
         if (move != null) {
             if (move.moveKind != Move.QUIT) {
@@ -65,7 +65,7 @@ public class MachinePlayer extends Player {
      *  @return Best objection that stores best move
      **/
 
-    public Best findBest(boolean side, int alpha, int beta, int searchDepth, int mark) {
+    public Best findBest(boolean side, float alpha, float beta, int searchDepth, int mark) {
         Board b = board;
         Best myBest = new Best();
         Best reply;
@@ -78,9 +78,9 @@ public class MachinePlayer extends Player {
         if (mark == searchDepth || hasValidNetwork(side) || l == null) {
             myBest.score = evaluate(COMPUTER);
             myBest.move = null;
-            if(hasValidNetwork(side)){
-                testFindBestPrinter(side, mark, myBest);
-            }
+//            if(hasValidNetwork(side)){
+//                testFindBestPrinter(side, mark, myBest);
+//            }
             //testFindBestPrinter(side, mark, myBest);
             return myBest;
         }
@@ -122,29 +122,69 @@ public class MachinePlayer extends Player {
         return myBest;
     }
 
-    public int evaluate(boolean side) {
+    public float evaluate(boolean side) {
         // pair number of this side
-        int PairNum1 = getPairNum(side);
+        float score1 = getScore(side);
         // pair number of opponent side
-        int PairNum2 = getPairNum(!side);
+        float score2 = getScore(!side);
         if (this.hasValidNetwork(side)) {
-            return Integer.MAX_VALUE;
+            return Float.MAX_VALUE;
         } else if(this.hasValidNetwork(!side)) {
-            return Integer.MIN_VALUE;
+            return Float.MIN_VALUE;
         } else {
-            return PairNum1 - 2 * PairNum2;
+            return score1 - score2;
         }
     }
 
-    private void testFindBestPrinter(boolean side, int mark, Best myBest){
-        if(mark <= 2) {
-            board.printBoard();
-            if(side == COMPUTER) {
-                System.out.println("side: computer");
+    public float[] getPairNum(boolean side) {
+        int c = checkColor(side);
+        float[] sum = new float[4];
+        for (int i = 0; i <  board.DIMENSION; i++) {
+            for (int j = 0; j < board.DIMENSION; j++) {
+                if (board.grid[i][j].color == c) {
+                    sum[0] += board.grid[i][j].findHorizonPair(board).length();
+                    sum[1] += board.grid[i][j].findVerticalPair(board).length();
+                    sum[2] += board.grid[i][j].findDiagonal1Pair(board).length();
+                    sum[3] += board.grid[i][j].findDiagonal2Pair(board).length();
+                }
             }
-            System.out.println("mark: " + mark);
-            System.out.println("score: " + myBest.score);
         }
+        for(int i = 0; i < sum.length; i++) {
+            sum[i] = sum[i] / 2;
+        }
+        return sum;
+    }
+
+    private float getMean(float[] l) {
+        float sum = 0;
+        for(int i = 0; i < l.length; i++) {
+            sum += l[i];
+        }
+        return sum / l.length ;
+    }
+
+    private float getStandDev(float[] l) {
+        float mean = getMean(l);
+        float sum = 0;
+        float result;
+        for(int i = 0; i < l.length; i++) {
+            sum += (l[i] - mean) * (l[i] - mean);
+        }
+        result = (float) Math.pow(sum, 0.5);
+        return result;
+    }
+
+    private float getScore(boolean side) {
+        float[] l = getPairNum(side);
+        float score = getMean(l) - getStandDev(l);
+        return score;
+    }
+
+    private void testFindBestPrinter(boolean side, int mark, Best myBest){
+        board.printBoard();
+        System.out.println("color: " + Color.toString(checkColor(side)));
+        System.out.println("mark: " + mark);
+        System.out.println("score: " + myBest.score);
     }
 
 
@@ -206,19 +246,7 @@ public class MachinePlayer extends Player {
      * @return score for the game board
      */
 
-    
-    public int getPairNum(boolean side) {
-        int c = checkColor(side);
-        int sum = 0;
-        for (int i = 0; i <  board.DIMENSION; i++) {
-            for (int j = 0; j < board.DIMENSION; j++) {
-                if (board.grid[i][j].color == c) {
-                    sum += board.grid[i][j].findPair(board).length();
-                }
-            }
-        }
-        return sum / 2;
-    }
+
     
     /**
      * hasValidNetwork() determines whether "this" GameBoard has a valid network
