@@ -43,7 +43,7 @@ public class MachinePlayer extends Player {
     // Returns a new move by "this" player.  Internally records the move (updates
     // the internal game board) as a move by "this" player.
     public Move chooseMove() {
-        Best best = findBest(MachinePlayer.COMPUTER, Integer.MIN_VALUE, Integer.MAX_VALUE,3, 0);
+        Best best = findBest(MachinePlayer.COMPUTER, Integer.MIN_VALUE, Integer.MAX_VALUE,5, 0);
         Move move = best.move;
         if (move != null) {
             if (move.moveKind != Move.QUIT) {
@@ -132,7 +132,7 @@ public class MachinePlayer extends Player {
         } else if(this.hasValidNetwork(!side)) {
             return Float.MIN_VALUE;
         } else {
-            return score1 - score2;
+            return score1 - 2 * score2;
         }
     }
 
