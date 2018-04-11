@@ -320,6 +320,7 @@ public class Tree234 extends IntDictionary {
 
         System.out.println("\nFinal tree:");
         t.printTree();
+
     }
 
 }
