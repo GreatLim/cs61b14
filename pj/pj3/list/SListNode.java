@@ -18,12 +18,19 @@ public class SListNode extends ListNode {
 
   protected SListNode next;
 
+  SListNode(Object obj) {
+    item = obj;
+    next = null;
+  }
+
   /**
    *  SListNode() constructor.
    *  @param i the item to store in the node.
    *  @param l the list this node is in.
    *  @param n the node following this node.
    */
+
+
   SListNode(Object i, SList l, SListNode n) {
     item = i;
     myList = l;
