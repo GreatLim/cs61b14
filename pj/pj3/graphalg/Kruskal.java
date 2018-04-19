@@ -79,12 +79,29 @@ public class Kruskal {
             Object v = neighbors.neighborList[i];
             int weight = neighbors.weightList[i];
             Vertex vVertex = (Vertex) vertexHashtable.find(v).value();
-            if(!vVertex.visited || u == v) {
+            if(uVertex.index >= vVertex.index) {
                 Edge edge = new Edge(u, v, weight);
                 edgeQueue.enqueue(edge);
+            }
+            if(!vVertex.visited || u == v) {
                 dfs(g, v);
             }
         }
     }
 
+
+//    private static void getAllEdge(WUGraph g) {
+//        Object[] vertices = g.getVertices();
+//        for (int i = 0; i < vertices.length; i++) {
+//            for(int j = i; j < vertices.length; j++) {
+//                if(g.isEdge(vertices[i], vertices[j])) {
+//                    Edge e = new Edge(vertices[i], vertices[j], g.weight(vertices[i], vertices[j]));
+//                    edgeQueue.enqueue(e);
+////                    int u = ((Vertex) vertexHashtable.find(vertices[i]).value()).index;
+////                    int v = ((Vertex) vertexHashtable.find(vertices[j]).value()).index;
+//                    System.out.println("[ " + i + " " + j + " " + "]" );
+//                }
+//            }
+//        }
+//    }
 }
