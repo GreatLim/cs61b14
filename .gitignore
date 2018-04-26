@@ -8,3 +8,6 @@
 *.xml
 .idea
 out
+
+#.gitignore
+.gitignore
